@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>МАТ🪜СТЪЛБА</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ══ THEMES ══ */
+:root,[data-theme="dark"]{
+  --bg:#06080f;--bg2:#0d1525;--panel:rgba(8,12,24,0.96);
+  --card:rgba(10,16,32,0.98);--border:rgba(255,255,255,0.12);
+  --gold:#ffd700;--gold2:#ffb800;--gold-dim:rgba(255,215,0,0.38);
+  --green:#00e676;--red:#ff1744;--blue:#40c4ff;--purple:#ce93d8;
+  --text:#f0f4ff;--muted:#7090b8;--muted2:#344a6a;
+  --inp-bg:rgba(255,255,255,0.07);--inp-border:rgba(255,255,255,0.2);
+  --sep:rgba(255,255,255,0.08);--shadow:rgba(0,0,0,0.7);
+  --accent1:#1a1f35;--accent2:#0f1528;
+}
+[data-theme="light"]{
+  --bg:#f5f0e8;--bg2:#fffef5;--panel:rgba(255,253,240,0.97);
+  --card:rgba(255,253,240,0.99);--border:rgba(120,80,0,0.14);
+  --gold:#c07000;--gold2:#a05800;--gold-dim:rgba(192,112,0,0.32);
+  --green:#1b7a3e;--red:#c62828;--blue:#1565c0;--purple:#7b1fa2;
+  --text:#1a1000;--muted:#5a4020;--muted2:#a08060;
+  --inp-bg:rgba(180,120,0,0.05);--inp-border:rgba(120,80,0,0.2);
+  --sep:rgba(120,80,0,0.1);--shadow:rgba(80,40,0,0.15);
+  --accent1:#fff8e8;--accent2:#fff3d6;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;font-family:'Nunito',sans-serif;color:var(--text);overflow:hidden;}
+body{background:var(--bg);}
+[data-theme="dark"] body{background:radial-gradient(ellipse at 50% 0%,#1a1535 0%,#06080f 60%);}
+[data-theme="light"] body{background:radial-gradient(ellipse at 50% 0%,#fff8e0 0%,#f5f0e8 60%);}
+/* ══ BG ══ */
+#bg-wrap{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+[data-theme="dark"] #bg-wrap{background:linear-gradient(180deg,#030608 0%,#080f1a 60%,#0b1422 100%);}
+[data-theme="light"] #bg-wrap{background:linear-gradient(180deg,#b8d8f5 0%,#d5ecff 60%,#c8e8d8 100%);}
+.bg-rail{position:absolute;top:0;bottom:0;width:5px;border-radius:3px;}
+[data-theme="dark"] .bg-rail{background:rgba(255,220,60,.06);}
+[data-theme="light"] .bg-rail{background:rgba(150,90,0,.08);}
+.bg-rail-l{left:38%;}.bg-rail-r{left:62%;}
+.bg-rungs{position:absolute;inset:0;}
+.bg-rung{position:absolute;left:38%;right:38%;height:3px;border-radius:2px;animation:rungScroll linear infinite;}
+[data-theme="dark"] .bg-rung{background:rgba(255,220,60,.045);}
+[data-theme="light"] .bg-rung{background:rgba(150,90,0,.065);}
+@keyframes rungScroll{from{transform:translateY(0)}to{transform:translateY(-100vh)}}
+.bg-particles{position:absolute;inset:0;}
+.bg-dot{position:absolute;border-radius:50%;animation:dotFloat linear infinite;}
+[data-theme="dark"] .bg-dot{background:rgba(255,228,77,.18);}
+[data-theme="light"] .bg-dot{background:rgba(180,120,0,.12);}
+@keyframes dotFloat{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:1}90%{opacity:.4}100%{transform:translateY(-100vh) translateX(var(--drift));opacity:0}}
+.bg-sym{position:absolute;font-family:'Nunito',sans-serif;font-weight:800;animation:symFloat linear infinite;opacity:0;}
+[data-theme="dark"] .bg-sym{color:rgba(255,228,77,.07);}
+[data-theme="light"] .bg-sym{color:rgba(150,90,0,.09);}
+@keyframes symFloat{0%{transform:translateY(0);opacity:0}15%{opacity:1}85%{opacity:.3}100%{transform:translateY(-100vh);opacity:0}}
+/* ══ SCREENS ══ */
+.screen{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;align-items:center;justify-content:center;background:transparent!important;}
+.screen.active{display:flex;}
+/* ══ HUD BUTTONS ══ */
+.hud-theme-btn,.hud-calc-btn{background:transparent;border:2px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation;transition:.2s;}
+.hud-theme-btn:hover,.hud-calc-btn:hover{background:var(--inp-bg);transform:scale(1.1);}
+.hud-calc-btn{border-color:var(--gold-dim);color:var(--gold);font-size:18px;}
+/* ══ GAME SCREEN ══ */
+#screen-game{justify-content:flex-start;overflow-y:auto;padding-bottom:30px;align-items:stretch; scroll-behavior: smooth;}
+.game-body{display:flex;flex-direction:row;align-items:flex-start;width:100%;max-width:1000px;margin:0 auto;position:relative;}
+.game-left{width:180px;flex-shrink:0;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;border-right:1px solid var(--sep);min-height:200px;}
+.level-label-side{text-align:center;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--muted);line-height:1.4;}
+.level-label-side b{color:var(--gold);font-weight:400;display:block;}
+.game-right{flex:1;min-width:0;padding:10px 12px;display:flex;flex-direction:column;transition:padding-right .3s cubic-bezier(0.1,0.9,0.2,1), padding-bottom .3s;}
+.numpad-open .game-right{padding-right:290px;} 
+.q-wrap{width:100%;}
+/* ══ HUD ══ */
+.hud{position:sticky;top:0;z-index:50;width:100%;backdrop-filter:blur(24px);border-bottom:2px solid var(--border);padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:nowrap;box-shadow:0 3px 20px var(--shadow);overflow:hidden;}
+[data-theme="dark"] .hud{background:rgba(6,8,15,0.96);}
+[data-theme="light"] .hud{background:rgba(255,252,235,0.97);}
+.hud-name{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 16px var(--gold-dim);}
+.hud-chip{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:900;border:2px solid;padding:4px 10px;border-radius:18px;white-space:nowrap;flex-shrink:0;}
+.hud-chip.steps{border-color:var(--gold);color:var(--gold);background:rgba(255,215,0,0.08);}
+.hud-chip.level{border-color:var(--blue);color:var(--blue);background:rgba(64,196,255,0.08);}
+.hud-chip.timer{border-color:var(--green);color:var(--green);background:rgba(0,230,118,0.08);font-size:14px;font-weight:900;padding:5px 14px;}
+.hud-chip.timer.warn{border-color:var(--red)!important;color:var(--red)!important;background:rgba(255,23,68,0.12)!important;animation:pulse .5s ease-in-out infinite alternate;}
+@keyframes pulse{from{opacity:1}to{opacity:.3}}
+.btn-home{background:transparent;border:2px solid var(--border);color:var(--muted);font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;padding:5px 10px;border-radius:7px;cursor:pointer;flex-shrink:0;touch-action:manipulation;}
+/* ══ TIMER BAR ══ */
+.timer-bar-wrap{height:10px;border-radius:5px;overflow:hidden;margin-bottom:14px;position:relative;}
+[data-theme="dark"] .timer-bar-wrap{background:rgba(255,255,255,0.06);}
+[data-theme="light"] .timer-bar-wrap{background:rgba(120,80,0,0.1);}
+.timer-bar-fill{height:100%;border-radius:5px;transition:width .12s linear,background .5s;position:relative;overflow:hidden;}
+[data-theme="dark"] .timer-bar-fill{background:linear-gradient(90deg,#00c853,#00e676);box-shadow:0 0 8px rgba(0,230,118,0.5);}
+[data-theme="light"] .timer-bar-fill{background:linear-gradient(90deg,#2e7d32,#43a047);}
+.timer-bar-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.25) 50%,transparent 100%);animation:shimmer 1.5s ease-in-out infinite;}
+@keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(200%)}}
+.timer-bar-fill.warn{background:linear-gradient(90deg,#c62828,#ff1744)!important;box-shadow:0 0 12px rgba(255,23,68,0.6)!important;}
+/* ══ QUESTION CARD ══ */
+.q-card{border:2px solid var(--border);border-radius:16px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden;animation:cardIn .3s ease;box-shadow:0 5px 28px var(--shadow);}
+[data-theme="dark"] .q-card{background:linear-gradient(160deg,rgba(16,22,44,0.99),rgba(10,14,30,0.99));}
+[data-theme="light"] .q-card{background:linear-gradient(160deg,rgba(255,253,242,0.99),rgba(255,248,225,0.99));}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,var(--gold),transparent);border-radius:16px 16px 0 0;}
+.q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:6px;}
+.q-type-badge{font-size:10px;font-weight:900;letter-spacing:2px;padding:3px 12px;border-radius:18px;text-transform:uppercase;}
+.q-penalty{font-size:11px;font-weight:800;color:var(--red);}
+.q-display{font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,7vw,46px);text-align:center;padding:15px 10px;border-radius:12px;margin-bottom:18px;letter-spacing:2px;line-height:1.2;}
+[data-theme="dark"] .q-display{color:var(--gold);background:rgba(255,215,0,0.06);border:2px solid rgba(255,215,0,0.2);text-shadow:0 0 28px rgba(255,200,0,0.5);}
+[data-theme="light"] .q-display{color:var(--gold2);background:rgba(192,112,0,0.06);border:2px solid rgba(192,112,0,0.2);}
+/* ══ STEPS GRID ══ */
+.steps-grid{display:grid;gap:12px;margin-bottom:14px;}
+.step-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.step-n{width:24px;height:24px;flex-shrink:0;border-radius:50%;border:2px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:var(--gold);}
+.step-lbl{font-size:14px;font-weight:800;color:var(--muted);min-width:0;flex-shrink:0;}
+/* ══ INPUTS ══ */
+.inp{font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;background:var(--inp-bg);border:2px solid var(--inp-border);color:var(--text);padding:10px 8px;text-align:center;outline:none;transition:.2s;width:84px;border-radius:9px;-webkit-appearance:none;appearance:none;cursor:pointer;}
+.inp:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim);background:rgba(255,215,0,0.05);}
+.inp.np-active{border-color:var(--gold)!important;box-shadow:0 0 0 3px var(--gold-dim)!important;background:rgba(255,215,0,0.05);}
+.inp.np-pasted{border-color:var(--green)!important;box-shadow:0 0 0 4px rgba(0,230,118,0.3)!important;transition:border-color .1s,box-shadow .1s;}
+.inp.ok{border-color:var(--green)!important;color:var(--green)!important;background:rgba(0,230,118,0.09)!important;}
+.inp.err{border-color:var(--red)!important;color:var(--red)!important;background:rgba(255,23,68,0.09)!important;}
+.w60{width:62px!important;}.w80{width:80px!important;}.w100{width:96px!important;}.w120{width:112px!important;}.w140{width:132px!important;}
+.op-lbl{font-size:15px;font-weight:900;color:var(--muted);flex-shrink:0;}
+.given-box{border:2px solid var(--border);border-radius:10px;padding:10px 13px;margin-bottom:11px;font-size:14px;font-weight:800;color:var(--muted);line-height:2;}
+[data-theme="dark"] .given-box{background:rgba(255,215,0,0.05);border-color:rgba(255,215,0,0.15);}
+[data-theme="light"] .given-box{background:rgba(192,112,0,0.04);border-color:rgba(192,112,0,0.14);}
+.given-box b{color:var(--gold);}
+.row-sep{height:1px;background:var(--sep);margin:10px 0;}
+.format-note{font-size:11px;font-weight:800;color:var(--muted);padding:4px 6px 8px;opacity:.85;}
+/* ══ HINT ══ */
+.hint-box{border:2px solid var(--gold-dim);padding:9px 13px;font-size:13px;font-weight:800;color:var(--gold);display:none;border-radius:9px;margin-bottom:12px;animation:fadeIn .3s ease;line-height:1.6;}
+[data-theme="dark"] .hint-box{background:rgba(255,215,0,0.07);}
+[data-theme="light"] .hint-box{background:rgba(192,112,0,0.06);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+/* ══ FORMULA BAR ══ */
+.formula-bar{background:var(--inp-bg);border:2px solid var(--sep);border-radius:10px;padding:9px 13px;font-size:12px;font-weight:800;color:var(--muted);flex-wrap:wrap;margin-bottom:12px;line-height:1.9;}
+.formula-bar b{color:var(--gold);}
+/* ══ FB ROW ══ */
+.fb-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;}
+.btn-check{font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;letter-spacing:1px;text-transform:uppercase;padding:12px 26px;border:2px solid var(--gold);color:var(--gold);background:rgba(255,215,0,0.08);cursor:pointer;border-radius:10px;touch-action:manipulation;-webkit-appearance:none;transition:.2s;}
+.btn-check:hover{background:rgba(255,215,0,0.18);}
+.btn-next{font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;letter-spacing:1px;text-transform:uppercase;padding:12px 26px;border:2px solid var(--green);color:var(--green);background:rgba(0,230,118,0.08);cursor:pointer;border-radius:10px;touch-action:manipulation;-webkit-appearance:none;transition:.2s;}
+.btn-next:hover:not(:disabled){background:rgba(0,230,118,0.18);}
+.btn-next:disabled{opacity:.3;cursor:not-allowed;}
+.fb-msg{font-size:15px;font-weight:800;font-style:italic;flex:1;min-width:0;}
+.fb-msg.ok{color:var(--green);}.fb-msg.retry{color:var(--blue);}.fb-msg.err{color:var(--red);}
+.btn-retry{font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;padding:10px 18px;border:2px solid var(--blue);color:var(--blue);background:rgba(64,196,255,0.08);cursor:pointer;border-radius:10px;touch-action:manipulation;transition:.2s;}
+.btn-retry:hover{background:rgba(64,196,255,0.18);}
+.btn-hint-req{font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;padding:10px 18px;border:2px solid var(--gold-dim);color:var(--gold);background:rgba(255,215,0,0.07);cursor:pointer;border-radius:10px;touch-action:manipulation;transition:.2s;}
+.btn-hint-req:hover{background:rgba(255,215,0,0.16);}
+
+/* ══ CALC PANEL ══ */
+.calc-panel{position:fixed;top:60px;right:15px;width:270px;border:2px solid var(--gold-dim);border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.8);z-index:200;display:none;overflow:hidden;transition:transform 0.3s cubic-bezier(0.1,0.9,0.2,1);}
+[data-theme="dark"] .calc-panel{background:linear-gradient(160deg, #101628, #080c18);}
+[data-theme="light"] .calc-panel{background:linear-gradient(160deg, #fffbee, #fff8e0); border-color:var(--gold-dim); box-shadow:0 10px 40px rgba(100,50,0,0.2);}
+.calc-panel.open{display:block;animation:calcIn .25s cubic-bezier(0.1,0.9,0.2,1);}
+@keyframes calcIn{from{opacity:0;transform:scale(.9) translateX(20px)}to{opacity:1;transform:none}}
+
+.calc-display{padding:14px 18px 10px;text-align:right;border-bottom:2px solid var(--border);}
+[data-theme="dark"] .calc-display{background:rgba(0,0,0,0.4); box-shadow:inset 0 4px 12px rgba(0,0,0,0.5);}
+[data-theme="light"] .calc-display{background:rgba(180,120,0,0.05); box-shadow:inset 0 4px 12px rgba(150,80,0,0.1);}
+.calc-expr{font-size:13px;font-weight:800;color:var(--muted);min-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Nunito',sans-serif;letter-spacing:1px;}
+.calc-result{font-size:36px;font-weight:900;color:var(--gold);min-height:45px;line-height:1.2;text-shadow:0 0 16px var(--gold-dim);word-break:break-all;}
+
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:12px;}
+.calc-btn{border:1px solid rgba(255,255,255,0.05);color:var(--text);font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;height:50px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;transition:background .15s, transform .1s;}
+[data-theme="dark"] .calc-btn{background:rgba(255,255,255,0.04); box-shadow:0 4px 0 rgba(0,0,0,0.3);}
+[data-theme="light"] .calc-btn{background:#fff; border-color:rgba(0,0,0,0.1); box-shadow:0 4px 0 rgba(0,0,0,0.08);}
+.calc-btn:active{transform:translateY(4px); box-shadow:none !important;}
+
+.calc-btn.op{color:var(--gold); background:rgba(255,215,0,0.08);}
+[data-theme="light"] .calc-btn.op{background:rgba(192,112,0,0.08);}
+.calc-btn.grn{color:var(--green); background:rgba(0,230,118,0.08);}
+.calc-btn.clr{color:var(--red); background:rgba(255,23,68,0.08);}
+
+.calc-btn.eq{grid-column:span 2; color:#1a0800; font-size:22px;}
+[data-theme="dark"] .calc-btn.eq{background:linear-gradient(135deg,#ffd700,#ffb800); box-shadow:0 4px 0 #b38000;}
+[data-theme="light"] .calc-btn.eq{background:linear-gradient(135deg,#c07000,#a05800); color:#fff; box-shadow:0 4px 0 #703d00;}
+
+.calc-btn.ok-btn{grid-column:span 4; background:var(--green); color:#000; font-size:16px; letter-spacing:1px; box-shadow:0 4px 0 #00994d;}
+[data-theme="light"] .calc-btn.ok-btn{background:#1b7a3e; color:#fff; box-shadow:0 4px 0 #104a25;}
+
+/* ══ Мобилен изглед за калкулатора ══ */
+@media(max-width: 800px) {
+  .calc-panel { top:auto; bottom:0; right:50%; transform:translateX(50%); width:100%; max-width:480px; z-index:900; border-radius:18px 18px 0 0; border-bottom:none; box-shadow:0 -5px 20px rgba(0,0,0,0.6);}
+  .calc-panel.open { animation:calcSlideUp .3s cubic-bezier(0.1,0.9,0.2,1); }
+  @keyframes calcSlideUp{from{opacity:0;transform:translate(50%, 100%)}to{opacity:1;transform:translate(50%, 0)}}
+  
+  .calc-grid { padding:6px; gap:4px; }
+  .calc-btn { height:34px; font-size:16px; border-radius:8px; }
+  .calc-btn.eq { font-size:18px; }
+  .calc-btn.ok-btn { font-size:14px; height: 36px; }
+  .calc-display { padding:4px 12px 2px; }
+  .calc-result { font-size:22px; min-height:26px; }
+  .calc-expr { font-size:11px; min-height:14px; margin-bottom: 2px; }
+  
+  .numpad-open .game-right { padding-right:12px; padding-bottom:240px; } 
+}
+
+/* ══ LADDER PANEL ══ */
+.steps-list{width:100%;display:flex;flex-direction:column;gap:3px;}
+.step-item{display:flex;align-items:center;gap:7px;padding:5px 9px;border-radius:8px;border:1.5px solid var(--sep);transition:.3s;}
+.step-item.done{background:rgba(0,230,118,0.1);border-color:rgba(0,230,118,0.4);}
+.step-item.current{background:rgba(255,215,0,0.08);border-color:rgba(255,215,0,0.45);}
+.step-item.fail{background:rgba(255,23,68,0.08);border-color:rgba(255,23,68,0.35);}
+.step-item.empty{background:var(--inp-bg);}
+.step-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;border:2px solid;}
+.step-dot.done{background:var(--green);border-color:var(--green);color:#fff;}
+.step-dot.current{border-color:var(--gold);color:var(--gold);}
+.step-dot.fail{border-color:var(--red);color:var(--red);}
+.step-dot.empty{border-color:var(--sep);color:var(--muted2);}
+.step-text{font-size:12px;font-weight:800;color:var(--muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.step-text.done{color:var(--green);}.step-text.current{color:var(--gold);}
+.step-icon{font-size:14px;flex-shrink:0;}
+/* ══ SQRT GROUP ══ */
+.sqrt-group{display:inline-flex;align-items:center;position:relative;}
+.sqrt-group .inp{border-radius:0 9px 9px 0;border-left:none;padding-left:6px;min-width:60px;}
+.sqrt-prefix{display:flex;align-items:center;justify-content:center;height:44px;min-width:36px;padding:0 7px;background:var(--inp-bg);border:2px solid var(--inp-border);border-radius:9px 0 0 9px;font-size:15px;font-weight:900;color:var(--blue);cursor:pointer;touch-action:manipulation;user-select:none;flex-shrink:0;transition:.15s;white-space:nowrap;}
+.sqrt-prefix:active,.sqrt-prefix:hover{background:rgba(96,208,255,0.14);}
+.sqrt-prefix.neg{color:var(--red);border-color:rgba(255,82,82,0.35);}
+.sqrt-prefix.neg:active,.sqrt-prefix.neg:hover{background:rgba(255,82,82,0.12);}
+.bq-roots-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;padding-left:31px;margin-top:6px;}
+.bq-root-cell{display:flex;flex-direction:column;align-items:flex-start;gap:3px;}
+.bq-root-label{font-size:11px;font-weight:900;color:var(--muted);letter-spacing:.5px;padding-left:2px;}
+/* ══ FALL FLASH ══ */
+@keyframes fallFlash{0%{opacity:0;background:rgba(255,60,60,0);}15%{opacity:1;background:rgba(255,60,60,0.28);}40%{background:rgba(255,60,60,0.12);}100%{opacity:0;background:rgba(255,60,60,0);}}
+@keyframes screenShake{0%,100%{transform:translateX(0);}15%{transform:translateX(-10px) rotate(-1deg);}30%{transform:translateX(10px) rotate(1deg);}45%{transform:translateX(-7px) rotate(-.5deg);}60%{transform:translateX(7px) rotate(.5deg);}75%{transform:translateX(-4px);}90%{transform:translateX(4px);}}
+.shaking{animation:screenShake .5s ease both!important;}
+/* ══ LEVEL OVERLAY ══ */
+.lvl-overlay{position:fixed;inset:0;background:rgba(3,6,14,0.97);z-index:300;display:none;align-items:center;justify-content:center;flex-direction:column;gap:0;overflow:hidden;}
+[data-theme="light"] .lvl-overlay{background:rgba(220,235,250,0.97);}
+.lvl-overlay.show{display:flex;}
+.lvl-icon-big{font-size:72px;animation:popIn .7s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes popIn{from{transform:scale(0) rotate(-15deg);opacity:0}to{transform:scale(1);opacity:1}}
+.lvl-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(30px,8vw,56px);color:var(--gold);letter-spacing:5px;text-shadow:0 0 40px var(--gold-dim);animation:fadeUp .5s .2s ease both;}
+.lvl-stars{font-size:36px;letter-spacing:6px;animation:starsIn .6s .4s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes starsIn{from{transform:scale(0) translateY(20px);opacity:0}to{transform:none;opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:none}}
+.lvl-stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;animation:fadeUp .5s .5s ease both;}
+.lvl-stat-chip{background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.12);border-radius:20px;padding:6px 16px;font-size:13px;font-weight:800;color:var(--text);}
+.lvl-stat-chip span{font-size:16px;margin-right:4px;}
+[data-theme="light"] .lvl-stat-chip{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.1);}
+.lvl-quote{max-width:400px;font-size:16px;font-weight:800;color:var(--text);font-style:italic;line-height:1.7;animation:fadeUp .5s .6s ease both;border-left:4px solid var(--gold);padding-left:14px;text-align:left;}
+.lvl-quote-src{font-size:11px;color:var(--muted);font-style:normal;font-weight:800;letter-spacing:2px;margin-top:4px;text-transform:uppercase;}
+.lvl-next-info{font-size:13px;font-weight:800;color:var(--muted);animation:fadeUp .5s .7s ease both;}
+.lvl-next-info b{color:var(--gold);}
+.btn-next-lvl{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:5px;background:var(--gold);border:none;color:#1a0f00;padding:14px 50px;cursor:pointer;border-radius:12px;animation:fadeUp .5s .85s ease both;box-shadow:0 4px 26px rgba(255,220,50,0.45);touch-action:manipulation;}
+/* ══ SUMMIT ══ */
+.summit{position:fixed;inset:0;background:var(--bg);z-index:400;display:none;align-items:center;justify-content:center;flex-direction:column;gap:11px;text-align:center;padding:24px 16px;overflow-y:auto;}
+.summit.show{display:flex;}
+.summit-icon{font-size:80px;animation:summitDrop .9s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes summitDrop{from{transform:translateY(-70px) scale(.5);opacity:0}to{transform:none;opacity:1}}
+.summit-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,10vw,72px);color:var(--gold);letter-spacing:6px;animation:fadeUp .6s .3s ease both;text-shadow:0 0 50px var(--gold-dim);}
+.summit-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,5vw,28px);color:var(--text);letter-spacing:3px;animation:fadeUp .6s .5s ease both;}
+.summit-name em{color:var(--gold);font-style:normal;}
+.summit-sub{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:2px;text-transform:uppercase;animation:fadeUp .6s .55s ease both;}
+.score-box{background:var(--inp-bg);border:2px solid var(--border);border-radius:13px;padding:15px 26px;animation:fadeUp .6s .7s ease both;width:100%;max-width:320px;}
+.s-row{display:flex;justify-content:space-between;gap:20px;font-size:14px;font-weight:800;color:var(--muted);margin-bottom:7px;}
+.s-row:last-child{margin:0;}.s-row b{color:var(--text);}
+.summit-grade{font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,6vw,38px);color:var(--green);letter-spacing:4px;animation:fadeUp .6s .9s ease both;}
+.new-box{background:rgba(46,223,114,0.05);border:2px solid rgba(46,223,114,0.22);border-radius:11px;padding:12px 18px;max-width:320px;width:100%;animation:fadeUp .6s 1s ease both;}
+.new-box-title{font-size:11px;font-weight:900;letter-spacing:2px;color:var(--green);text-transform:uppercase;margin-bottom:5px;}
+.new-box-list{font-size:12px;font-weight:800;color:var(--muted);line-height:2;}
+.copy-box{max-width:340px;width:100%;animation:fadeUp .6s 1.1s ease both;}
+.copy-lbl{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;text-align:left;}
+.copy-ta{width:100%;background:var(--inp-bg);border:2px solid var(--border);color:var(--text);font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;padding:9px 42px 9px 11px;border-radius:9px;resize:none;height:78px;outline:none;line-height:1.9;}
+.copy-wrap{position:relative;}
+.copy-btn{position:absolute;top:7px;right:7px;background:rgba(255,228,77,0.13);border:1.5px solid var(--gold-dim);color:var(--gold);font-size:11px;font-weight:900;padding:4px 8px;cursor:pointer;border-radius:5px;touch-action:manipulation;}
+.copy-msg{font-size:10px;font-weight:900;color:var(--green);margin-top:3px;height:14px;text-align:right;}
+.btn-restart{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:4px;background:transparent;border:2px solid var(--gold);color:var(--gold);padding:12px 42px;cursor:pointer;border-radius:11px;touch-action:manipulation;}
+.btn-print{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:4px;background:var(--blue);border:2px solid var(--blue);color:#fff;padding:12px 42px;cursor:pointer;border-radius:11px;touch-action:manipulation;box-shadow:0 4px 18px rgba(96,208,255,0.3);}
+.summit-motiv{font-size:16px;font-weight:800;font-style:italic;color:var(--muted);text-align:center;max-width:320px;line-height:1.6;animation:fadeUp .6s 1s ease both;border-left:3px solid var(--gold-dim);padding-left:12px;}
+.type-errors-box{background:rgba(255,23,68,0.05);border:2px solid rgba(255,23,68,0.22);border-radius:11px;padding:12px 18px;max-width:320px;width:100%;animation:fadeUp .6s 1.05s ease both;}
+/* ══ CSS LADDER VIZ ══ */
+.ladder-viz{position:relative;width:90px;flex-shrink:0;align-self:stretch;min-height:160px;}
+.lv-rail{position:absolute;top:24px;bottom:12px;width:6px;border-radius:3px;}
+[data-theme="dark"] .lv-rail{background:linear-gradient(180deg,#ffe44d,#c89010);}
+[data-theme="light"] .lv-rail{background:linear-gradient(180deg,#c08000,#8a5800);}
+.lv-rail-l{left:22%;}.lv-rail-r{right:22%;}
+.lv-rungs{position:absolute;inset:0;top:24px;bottom:12px;}
+.lv-rung{position:absolute;left:22%;right:22%;height:5px;border-radius:3px;transition:background .3s,box-shadow .3s;}
+.lv-rung.empty{background:rgba(255,255,255,.12);}
+.lv-rung.done{background:#2edf72;box-shadow:0 0 8px rgba(46,223,114,.5);}
+.lv-rung.current{background:#ffe44d;box-shadow:0 0 12px rgba(255,228,77,.6);animation:rungPulse .9s ease-in-out infinite alternate;}
+.lv-rung.fail{background:#ff5252;animation:rungFail .4s ease;}
+[data-theme="light"] .lv-rung.empty{background:rgba(0,0,0,.1);}
+@keyframes rungPulse{from{box-shadow:0 0 6px rgba(255,228,77,.3)}to{box-shadow:0 0 18px rgba(255,228,77,.8)}}
+@keyframes rungFail{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.6)}}
+.lv-flag{position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:18px;animation:flagWave .8s ease-in-out infinite alternate;}
+@keyframes flagWave{from{transform:translateX(-50%) rotate(-8deg)}to{transform:translateX(-50%) rotate(8deg)}}
+.lv-climber{position:absolute;left:50%;transform:translateX(-50%);width:44px;transition:bottom .55s cubic-bezier(.34,1.56,.64,1);z-index:5;}
+.lvc-rope{width:2px;height:14px;background:linear-gradient(180deg,rgba(255,228,77,.8),transparent);margin:0 auto;}
+.lvc-svg{width:40px;height:60px;overflow:visible;animation:climberBob 1.1s ease-in-out infinite alternate;}
+@keyframes climberBob{from{transform:translateY(0) rotate(-2deg)}to{transform:translateY(-4px) rotate(2deg)}}
+.arm-l{animation:armSwingL 0.7s ease-in-out infinite alternate;transform-origin:20px 20px;}
+.arm-r{animation:armSwingR 0.7s ease-in-out infinite alternate;transform-origin:20px 20px;}
+@keyframes armSwingL{from{transform:rotate(0deg)}to{transform:rotate(25deg)}}
+@keyframes armSwingR{from{transform:rotate(0deg)}to{transform:rotate(-25deg)}}
+.leg-l{animation:legSwingL 0.7s ease-in-out infinite alternate;transform-origin:20px 35px;}
+.leg-r{animation:legSwingR 0.7s ease-in-out infinite alternate;transform-origin:20px 35px;}
+@keyframes legSwingL{from{transform:rotate(0deg)}to{transform:rotate(20deg)}}
+@keyframes legSwingR{from{transform:rotate(0deg)}to{transform:rotate(-20deg)}}
+.lv-climber.climbing .lvc-svg{animation:climberClimb .5s ease both;}
+@keyframes climberClimb{0%{transform:scaleY(0.8) rotate(-5deg)}40%{transform:scaleY(1.15) rotate(5deg)}100%{transform:scaleY(1) rotate(0)}}
+.lv-climber.falling .lvc-svg{animation:climberFall .45s ease both;}
+@keyframes climberFall{0%{transform:rotate(0)}25%{transform:rotate(30deg) translateY(4px)}60%{transform:rotate(-20deg) translateY(2px)}100%{transform:rotate(0)}}
+.lv-top-star{position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:18px;display:none;animation:starPop .5s cubic-bezier(.34,1.56,.64,1) both;}
+.lv-climber.at-top .lv-top-star{display:block;}
+@keyframes starPop{from{transform:translateX(-50%) scale(0) rotate(-30deg);opacity:0}to{transform:translateX(-50%) scale(1) rotate(0);opacity:1}}
+.lv-rung-num{position:absolute;right:-18px;font-size:9px;font-weight:900;color:var(--muted2);top:50%;transform:translateY(-50%);}
+/* ══ RULES OVERLAY (REUSED FOR BOTH SCREENS) ══ */
+.rules-overlay{position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
+[data-theme="dark"] .rules-overlay{background:radial-gradient(ellipse at 50% 30%,#1a1040 0%,#06080f 70%);}
+[data-theme="light"] .rules-overlay{background:radial-gradient(ellipse at 50% 30%,#fff8d6 0%,#f5f0e8 70%);}
+.rules-overlay.hidden{display:none;}
+.ro-particles{position:fixed;inset:0;pointer-events:none;z-index:550;}
+.ro-particle{position:absolute;border-radius:50%;animation:roFloat linear infinite;}
+[data-theme="dark"] .ro-particle{background:rgba(255,215,0,0.15);}
+[data-theme="light"] .ro-particle{background:rgba(192,112,0,0.12);}
+.ro-math{position:absolute;font-family:'Nunito',sans-serif;font-weight:900;animation:roFloat linear infinite;opacity:0;}
+[data-theme="dark"] .ro-math{color:rgba(255,215,0,0.12);}
+[data-theme="light"] .ro-math{color:rgba(160,80,0,0.1);}
+@keyframes roFloat{0%{transform:translateY(100vh) translateX(0) rotate(0deg);opacity:0;}10%{opacity:1;}90%{opacity:.6;}100%{transform:translateY(-120px) translateX(var(--rx,0px)) rotate(var(--rr,20deg));opacity:0;}}
+.rules-box{position:relative;z-index:601;border-radius:24px;padding:28px 24px 24px;max-width:400px;width:100%;animation:roBounceIn .7s cubic-bezier(.34,1.56,.64,1) both;}
+[data-theme="dark"] .rules-box{background:linear-gradient(160deg,rgba(18,12,40,0.97),rgba(8,10,24,0.97));border:2px solid rgba(255,215,0,0.25);box-shadow:0 0 60px rgba(255,215,0,0.12),0 20px 60px rgba(0,0,0,0.8);}
+[data-theme="light"] .rules-box{background:linear-gradient(160deg,rgba(255,253,240,0.98),rgba(255,248,220,0.98));border:2px solid rgba(192,112,0,0.2);box-shadow:0 0 40px rgba(192,112,0,0.1),0 20px 50px rgba(100,60,0,0.15);}
+@keyframes roBounceIn{from{transform:scale(.5) translateY(40px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+.ro-hero-img{width:100%;height:auto;border-radius:16px;margin-bottom:12px;border:2px solid var(--gold-dim);box-shadow:0 8px 24px rgba(0,0,0,0.4);animation:roLogoIn .8s .1s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes roLogoIn{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:none;opacity:1}}
+.ro-subtitle{text-align:center;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:18px;animation:fadeUp .5s .5s ease both;}
+.rules-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.rules-item{display:flex;align-items:flex-start;gap:12px;font-size:14px;font-weight:700;color:var(--text);line-height:1.5;border-radius:12px;padding:10px 12px;animation:roItemIn .5s ease both;}
+[data-theme="dark"] .rules-item{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);}
+[data-theme="light"] .rules-item{background:rgba(0,0,0,0.03);border:1px solid rgba(120,80,0,0.1);}
+.ro-item-1{animation-delay:.1s;border-left:3px solid var(--green)!important;}
+.ro-item-2{animation-delay:.2s;border-left:3px solid var(--red)!important;}
+.ro-item-3{animation-delay:.3s;border-left:3px solid var(--blue)!important;}
+.ro-item-4{animation-delay:.4s;border-left:3px solid var(--gold)!important;}
+@keyframes roItemIn{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+.rules-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.rules-item b{color:var(--gold);}
+.rules-item small{font-size:11px;color:var(--muted);display:block;margin-top:2px;}
+.ro-form{width:100%;margin-bottom:14px;animation:fadeUp .5s .25s ease both;}
+.ro-form-row{margin-bottom:10px;text-align:left;}
+.ro-label{display:block;font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.ro-required{color:var(--red);}
+.ro-inp{width:100%;background:var(--inp-bg);border:2px solid var(--inp-border);color:var(--text);font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;padding:11px 13px;border-radius:10px;outline:none;transition:.2s;-webkit-appearance:none;}
+.ro-inp:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim);}
+.ro-inp.error{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(255,23,68,0.25)!important;}
+.ro-err{font-size:11px;font-weight:800;color:var(--red);margin-top:4px;display:none;}
+.ro-err.show{display:block;}
+.ro-cfg-row{display:flex;gap:8px;}
+.ro-cfg-block{flex:1;}
+.ro-sel{width:100%;background:var(--inp-bg);border:2px solid var(--inp-border);color:var(--text);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;padding:9px 10px;border-radius:9px;outline:none;-webkit-appearance:none;cursor:pointer;}
+.ro-theme-btn{position:absolute;top:12px;right:12px;z-index:10;background:rgba(255,255,255,0.08);border:2px solid var(--border);color:var(--text);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;transition:.2s;}
+.ro-theme-btn:hover{transform:scale(1.1);background:var(--inp-bg);}
+.rules-btn{width:100%;border:none;font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:5px;padding:16px;border-radius:14px;cursor:pointer;touch-action:manipulation;animation:roBtnIn .6s .5s cubic-bezier(.34,1.56,.64,1) both;position:relative;overflow:hidden;}
+[data-theme="dark"] .rules-btn{background:linear-gradient(135deg,#ffd700,#ff9800);color:#1a0800;box-shadow:0 6px 30px rgba(255,180,0,0.5);}
+[data-theme="light"] .rules-btn{background:linear-gradient(135deg,#c07000,#a04000);color:#fff8e8;box-shadow:0 6px 24px rgba(160,80,0,0.4);}
+.rules-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);transform:translateX(-100%);animation:roBtnShimmer 2s 1.5s ease-in-out infinite;}
+@keyframes roBtnShimmer{to{transform:translateX(200%)}}
+@keyframes roBtnIn{from{transform:scale(.8) translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.rules-btn:hover{transform:translateY(-3px) scale(1.02);filter:brightness(1.1);}
+
+/* НОВ СТИЛ ЗА АВТОРИТЕ */
+.rules-author{
+  text-align:center;
+  font-size:13px;
+  font-weight:600;
+  line-height:1.5;
+  color:var(--gold-dim);
+  opacity:0.9;
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid var(--sep);
+  animation:fadeUp .5s .6s ease both;
+}
+.rules-author b { color: var(--gold); }
+[data-theme="light"] .rules-author{color:rgba(160,100,0,0.8);}
+
+.rules-demo-btn{width:100%;background:transparent;border:1.5px solid var(--border);color:var(--muted);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;padding:9px;border-radius:10px;cursor:pointer;touch-action:manipulation;margin-bottom:8px;transition:.2s;letter-spacing:.5px;animation:fadeUp .5s .4s ease both;}
+.rules-demo-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(255,215,0,0.05);}
+/* ══ DEMO OVERLAY ══ */
+.demo-overlay{position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;padding:16px;}
+[data-theme="dark"] .demo-overlay{background:rgba(3,4,10,0.96);}
+[data-theme="light"] .demo-overlay{background:rgba(240,235,220,0.97);}
+.demo-overlay.hidden{display:none;}
+.demo-box{border-radius:20px;padding:22px 20px;max-width:400px;width:100%;border:2px solid var(--border);box-shadow:0 12px 50px var(--shadow);max-height:90vh;overflow-y:auto;}
+[data-theme="dark"] .demo-box{background:rgba(10,14,28,0.99);}
+[data-theme="light"] .demo-box{background:rgba(255,253,240,0.99);}
+.demo-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--gold);text-align:center;margin-bottom:14px;}
+.demo-eq{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);text-align:center;padding:12px;border-radius:10px;margin-bottom:14px;letter-spacing:1px;}
+[data-theme="dark"] .demo-eq{background:rgba(255,215,0,0.07);border:1.5px solid rgba(255,215,0,0.2);}
+[data-theme="light"] .demo-eq{background:rgba(192,112,0,0.05);border:1.5px solid rgba(192,112,0,0.18);}
+.demo-step{display:flex;align-items:flex-start;gap:10px;padding:9px 10px;border-radius:10px;margin-bottom:6px;font-size:13px;font-weight:800;color:var(--text);}
+[data-theme="dark"] .demo-step{background:rgba(255,255,255,0.04);}
+[data-theme="light"] .demo-step{background:rgba(0,0,0,0.03);}
+.demo-num{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;margin-top:1px;}
+.s1 .demo-num{background:var(--gold);}.s2 .demo-num{background:var(--blue);}.s3 .demo-num{background:var(--green);}
+.demo-result{text-align:center;padding:12px;border-radius:10px;border:2px solid var(--green);margin:12px 0 6px;}
+[data-theme="dark"] .demo-result{background:rgba(0,230,118,0.08);}
+[data-theme="light"] .demo-result{background:rgba(27,122,62,0.06);}
+.demo-result-txt{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--green);letter-spacing:2px;}
+.demo-field{display:inline-block;min-width:28px;padding:3px 8px;margin:0 2px;border-radius:6px;border:2px solid var(--inp-border);background:var(--inp-bg);font-weight:900;font-size:15px;color:var(--text);vertical-align:middle;font-family:'Nunito',sans-serif;transition:border-color .2s,color .2s,background .2s;}
+.demo-field.typing{border-color:var(--gold);color:var(--gold);}
+.demo-field.done{border-color:var(--green)!important;color:var(--green)!important;background:rgba(0,230,118,0.09)!important;animation:dfPop .2s ease;}
+@keyframes dfPop{from{transform:scale(1.25)}to{transform:scale(1)}}
+.demo-close{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold2,#ffb800));border:none;color:#1a0800;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;padding:12px;border-radius:11px;cursor:pointer;margin-top:8px;touch-action:manipulation;}
+</style>
+</head>
+<body>
+
+<div id="bg-wrap">
+  <div class="bg-rail bg-rail-l"></div>
+  <div class="bg-rail bg-rail-r"></div>
+  <div class="bg-rungs" id="bg-rungs"></div>
+  <div class="bg-particles" id="bg-particles"></div>
+</div>
+
+<div class="ro-particles" id="intro-particles"></div>
+
+<div class="rules-overlay hidden" id="welcome-overlay">
+  <button class="ro-theme-btn" onclick="toggleTheme()">🌙</button>
+  <div class="rules-box">
+    
+    <img src="image_4bd4a7.jpg.png" alt="МАТ СТЪЛБА" class="ro-hero-img">
+
+    <div class="ro-subtitle">Квадратни уравнения · Изкачи се до върха!</div>
+    <div class="ro-form">
+      <div class="ro-form-row">
+        <label class="ro-label">🧗 Твоето име <span class="ro-required">*</span></label>
+        <input class="ro-inp" id="ro-name" placeholder="напр. Ива Георгиева" maxlength="32" autocomplete="off" autocorrect="off">
+        <div class="ro-err" id="ro-name-err">⚠ Задължително поле!</div>
+      </div>
+      <div class="ro-form-row">
+        <label class="ro-label">🏫 Клас</label>
+        <input class="ro-inp" id="ro-class" placeholder="напр. 9А" maxlength="8" autocomplete="off">
+      </div>
+      <div class="ro-cfg-row">
+        <div class="ro-cfg-block">
+          <label class="ro-label">⚡ Трудност</label>
+          <select class="ro-sel" id="ro-diff">
+            <option value="easy">Лесна</option>
+            <option value="med" selected>Средна</option>
+            <option value="hard">Трудна</option>
+          </select>
+        </div>
+        <div class="ro-cfg-block">
+          <label class="ro-label">💡 Подсказки</label>
+          <select class="ro-sel" id="ro-hint">
+            <option value="1">Включени</option>
+            <option value="0">Изключени</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <button class="rules-btn" onclick="goToRules()">НАПРЕД КЪМ ПРАВИЛАТА →</button>
+    
+    <div class="rules-author">
+      Създадена по идея на <b>Валя Витковска</b><br>
+      с помощта на <b>Claude и Gemini</b>
+    </div>
+
+  </div>
+</div>
+
+<div class="rules-overlay hidden" id="rules-overlay">
+  <button class="ro-theme-btn" onclick="toggleTheme()">🌙</button>
+  <div class="rules-box" id="rules-inner-box">
+    <h2 style="text-align:center; color:var(--gold); font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:4px; margin-bottom:15px; text-shadow:0 0 16px var(--gold-dim);">УКАЗАНИЯ</h2>
+    <div class="rules-list">
+      <div class="rules-item ro-item-1"><span class="rules-icon">✅</span><span>Верен отговор → <b>качваш се</b> нагоре</span></div>
+      <div class="rules-item ro-item-2"><span class="rules-icon">❌</span><span>Грешен → <b>слизаш</b> с 1 стъпало, после можеш да <b>опиташ пак</b></span></div>
+      <div class="rules-item ro-item-3"><span class="rules-icon">⏱</span><span><b>Времето тече</b> — по-сложните задачи имат повече секунди</span></div>
+      <div class="rules-item ro-item-4"><span class="rules-icon">🔢</span><span>Докосни поле → показва се калкулаторът вдясно. Каквото сметнеш, се записва автоматично!</span></div>
+    </div>
+    <button class="rules-demo-btn" onclick="showDemo()">▶ Виж пример как работи</button>
+    <button class="rules-btn" onclick="startFromRules()">🚀 ИЗКАЧВАМ СЕ!</button>
+    
+    <div class="rules-author">
+      Създадена по идея на <b>Валя Витковска</b><br>
+      с помощта на <b>Claude и Gemini</b>
+    </div>
+
+  </div>
+</div>
+
+<div class="screen" id="screen-game">
+  <div class="hud">
+    <button class="btn-home" onclick="confirmHome()">✕</button>
+    <div class="hud-name" id="hud-name">Алпинист</div>
+    <div class="hud-chip steps">🪜<span id="hud-step">0</span>/<span id="hud-max">?</span></div>
+    <div class="hud-chip level">Ниво <span id="hud-level">1</span></div>
+    <div class="hud-chip timer" id="timer-chip">⏱<span id="hud-timer">--</span></div>
+  </div>
+
+  <div class="game-body">
+    <div class="game-left">
+      <div class="ladder-viz" id="ladder-viz">
+        <div class="lv-rail lv-rail-l"></div>
+        <div class="lv-rail lv-rail-r"></div>
+        <div class="lv-rungs" id="lv-rungs"></div>
+        <div class="lv-flag">🚩</div>
+        <div class="lv-climber" id="lv-climber">
+          <div class="lv-top-star">⭐</div>
+          <div class="lvc-rope"></div>
+          <svg class="lvc-svg" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="8" r="7" fill="#ffe44d" stroke="#c89010" stroke-width="2"/>
+            <line x1="20" y1="15" x2="20" y2="35" stroke="#ffe44d" stroke-width="3.5" stroke-linecap="round"/>
+            <line class="arm-l" x1="20" y1="20" x2="6"  y2="28" stroke="#ffe44d" stroke-width="3" stroke-linecap="round"/>
+            <line class="arm-r" x1="20" y1="20" x2="34" y2="22" stroke="#ffe44d" stroke-width="3" stroke-linecap="round"/>
+            <line class="leg-l" x1="20" y1="35" x2="9"  y2="50" stroke="#ffe44d" stroke-width="3.5" stroke-linecap="round"/>
+            <line class="leg-r" x1="20" y1="35" x2="31" y2="48" stroke="#ffe44d" stroke-width="3.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="level-label-side">Ниво <b id="lvl-label-num">1</b><br><b id="lvl-label-sub">Приземен етаж</b></div>
+      <div class="steps-list" id="steps-list"></div>
+    </div>
+
+    <div class="game-right">
+      <div class="timer-bar-wrap"><div class="timer-bar-fill" id="timer-bar" style="width:100%"></div></div>
+      <div class="q-card">
+        <div class="q-meta">
+          <span class="q-type-badge" id="q-type-badge">ЗАДАЧА</span>
+          <span class="q-penalty">⚠ Грешка = −1 стъпало</span>
+        </div>
+        <div class="q-display" id="q-display"></div>
+        <div class="steps-grid" id="steps-grid"></div>
+        <div class="hint-box" id="hint-box"></div>
+        <div class="fb-row">
+          <button class="btn-check" id="btn-check" onclick="checkAnswer()">✓ Провери</button>
+          <button class="btn-next" id="btn-next" onclick="nextQuestion()" disabled>Напред →</button>
+          <button class="btn-retry" id="btn-retry" onclick="retryQuestion()" style="display:none">↺ Опитай пак</button>
+          <button class="btn-hint-req" id="btn-hint-req" onclick="requestHint()" style="display:none">💡 Подсказка</button>
+          <div class="fb-msg" id="fb-msg"></div>
+        </div>
+      </div>
+      <div class="formula-bar">
+        <b>📐</b> ax²+bx+c=0 → x=(−b±√D)/2a | <b>D=b²−4ac</b> | <b>Виет:</b> x₁+x₂=−b/a, x₁·x₂=c/a
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="calc-panel" id="calc-panel">
+  <div class="calc-display"><div class="calc-expr" id="calc-expr"></div><div class="calc-result" id="calc-result"></div></div>
+  <div class="calc-grid">
+    <button class="calc-btn clr" onclick="calcClear()">C</button>
+    <button class="calc-btn op" onclick="calcParen('(')">(</button>
+    <button class="calc-btn op" onclick="calcParen(')')">)</button>
+    <button class="calc-btn op" onclick="calcDel()">⌫</button>
+
+    <button class="calc-btn op" onclick="calcSq()">x²</button>
+    <button class="calc-btn grn" onclick="calcSqrtSym()">√</button>
+    <button class="calc-btn op" onclick="calcFrac()">⁄</button> 
+    <button class="calc-btn op" onclick="calcOp('/')">÷</button>
+
+    <button class="calc-btn" onclick="calcNum('7')">7</button>
+    <button class="calc-btn" onclick="calcNum('8')">8</button>
+    <button class="calc-btn" onclick="calcNum('9')">9</button>
+    <button class="calc-btn op" onclick="calcOp('*')">×</button>
+
+    <button class="calc-btn" onclick="calcNum('4')">4</button>
+    <button class="calc-btn" onclick="calcNum('5')">5</button>
+    <button class="calc-btn" onclick="calcNum('6')">6</button>
+    <button class="calc-btn op" onclick="calcMinus()">−</button> 
+
+    <button class="calc-btn" onclick="calcNum('1')">1</button>
+    <button class="calc-btn" onclick="calcNum('2')">2</button>
+    <button class="calc-btn" onclick="calcNum('3')">3</button>
+    <button class="calc-btn op" onclick="calcOp('+')">+</button>
+
+    <button class="calc-btn" onclick="calcNum('0')">0</button>
+    <button class="calc-btn op" onclick="calcDot()">.</button>
+    <button class="calc-btn eq" onclick="calcEquals()">=</button>
+
+    <button class="calc-btn ok-btn" onclick="calcClose()">✅ ОК →</button>
+  </div>
+</div>
+
+<div id="fall-flash" style="position:fixed;inset:0;z-index:500;pointer-events:none;display:none;"></div>
+
+<div class="demo-overlay hidden" id="demo-overlay">
+  <div class="demo-box">
+    <div class="demo-title">📖 Пример — Стандартна задача</div>
+    <div class="demo-eq">x² − 5x + 6 = 0</div>
+
+    <div class="demo-step s1" id="demo-s1" style="opacity:0;transform:translateX(-14px);transition:opacity .35s,transform .35s;">
+      <div class="demo-num">1</div>
+      <div style="width:100%">
+        <b>Коефициенти:</b><br>
+        <span style="font-size:13px;color:var(--muted)">a =</span>
+        <span class="demo-field" id="dfa"></span>
+        <span style="font-size:13px;color:var(--muted)"> b =</span>
+        <span class="demo-field" id="dfb"></span>
+        <span style="font-size:13px;color:var(--muted)"> c =</span>
+        <span class="demo-field" id="dfc"></span>
+      </div>
+    </div>
+
+    <div class="demo-step s2" id="demo-s2" style="opacity:0;transform:translateX(-14px);transition:opacity .35s,transform .35s;">
+      <div class="demo-num">2</div>
+      <div style="width:100%">
+        <b>D = b²−4ac</b><br>
+        <span style="font-size:12px;color:var(--muted)">(−5)²−4·1·6 = 25−24 = </span>
+        <span class="demo-field" id="dfd"></span>
+      </div>
+    </div>
+
+    <div class="demo-step s3" id="demo-s3" style="opacity:0;transform:translateX(-14px);transition:opacity .35s,transform .35s;">
+      <div class="demo-num">3</div>
+      <div style="width:100%">
+        <b>Корени: x = (5 ± √1) / 2</b><br>
+        <span style="font-size:13px;color:var(--muted)">x₁ =</span>
+        <span class="demo-field" id="dfx1"></span>
+        <span style="font-size:13px;color:var(--muted)"> x₂ =</span>
+        <span class="demo-field" id="dfx2"></span>
+      </div>
+    </div>
+
+    <div class="demo-result" id="demo-result" style="opacity:0;transition:opacity .4s;">
+      <div class="demo-result-txt">🎉 Верен! +1 стъпало нагоре!</div>
+    </div>
+
+    <div style="font-size:12px;font-weight:800;color:var(--muted);text-align:center;padding:7px 0;border-top:1px solid var(--sep);margin-bottom:10px;opacity:0;transition:opacity .4s;" id="demo-tip">
+      💡 Докосни поле → показва се калкулаторът вдясно.<br>Всичко се записва автоматично в полето!
+    </div>
+
+    <button class="demo-close" id="demo-close-btn" onclick="hideDemo()" style="opacity:0;transition:opacity .4s;pointer-events:none;">✓ Разбрах — СТАРТ!</button>
+  </div>
+</div>
+
+<div class="lvl-overlay" id="lvl-overlay">
+  <canvas id="lvl-confetti" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:20px;width:100%;max-width:480px;">
+    <div class="lvl-icon-big" id="lvl-icon">🏠</div>
+    <div class="lvl-title" id="lvl-title">НИВО ПОКОРЕНО!</div>
+    <div class="lvl-stars" id="lvl-stars">⭐⭐⭐</div>
+    <div class="lvl-stats" id="lvl-stats"></div>
+    <blockquote class="lvl-quote"><div id="lvl-quote-text"></div><div class="lvl-quote-src" id="lvl-quote-src"></div></blockquote>
+    <div class="lvl-next-info" id="lvl-next-info"></div>
+    <button class="btn-next-lvl" onclick="nextLevel()">🪜 СЛЕДВАЩО НИВО →</button>
+  </div>
+</div>
+
+<div class="summit" id="summit">
+  <div class="summit-icon">🏆</div>
+  <div class="summit-title">ПОБЕДИТЕЛ!</div>
+  <div class="summit-name">🧗 <em id="sum-name">—</em> 🧗</div>
+  <div class="summit-sub">Всички нива покорени!</div>
+  <div class="score-box">
+    <div class="s-row"><span>Клас:</span><b id="sum-class">—</b></div>
+    <div class="s-row"><span>Стъпала:</span><b id="sum-steps">—</b></div>
+    <div class="s-row"><span>Верни/Всичко:</span><b id="sum-ok">—</b></div>
+    <div class="s-row"><span>Грешки:</span><b id="sum-err">—</b></div>
+    <div class="s-row"><span>Точност:</span><b id="sum-acc">—</b></div>
+    <div class="s-row"><span>Трудност:</span><b id="sum-diff">—</b></div>
+    <div class="s-row"><span>Подсказки:</span><b id="sum-hints">—</b></div>
+    <div class="s-row"><span>Повторни опити:</span><b id="sum-retries">—</b></div>
+  </div>
+  <div class="summit-grade" id="sum-grade"></div>
+  <div class="summit-motiv" id="sum-motiv"></div>
+  <div class="new-box"><div class="new-box-title">📚 Нови теми те чакат:</div><div class="new-box-list" id="new-box-list"></div></div>
+  <div class="type-errors-box" id="type-errors-box" style="display:none">
+    <div class="new-box-title" style="color:var(--red)">📊 Типове за упражнение:</div>
+    <div id="type-errors-list" class="new-box-list"></div>
+  </div>
+  <div class="copy-box">
+    <div class="copy-lbl">📋 Резултат за учителя:</div>
+    <div class="copy-wrap"><textarea class="copy-ta" id="result-ta" readonly></textarea><button class="copy-btn" onclick="copyResult()">📋</button></div>
+    <div class="copy-msg" id="copy-msg"></div>
+  </div>
+  <div id="leaderboard-container" style="width:100%; max-width:320px; margin-top:10px; animation:fadeUp .6s 1.2s ease both;"></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;animation:fadeUp .6s 1.4s ease both;">
+    <button class="btn-print" onclick="printResult()">🖨️ ПЕЧАТ НА РЕЗУЛТАТА</button>
+    <button class="btn-restart" onclick="goHome()">↺ Нова игра</button>
+  </div>
+</div>
+<div id="print-area" style="display:none"></div>
+
+<script>
+var DOM = { timerBar: null, timerChip: null, hudTimer: null };
+
+/* ════ UNIFIED CALCULATOR LOGIC С ПЪЛНА ПОДДРЪЖКА НА СКОБИ И КВАДРАТ ════ */
+var CALC = { target: null, tokens: [], display: '', newNum: true, lastExpr: '', justOp: false };
+
+function npAttach(){
+  var sg=document.getElementById('steps-grid');if(!sg)return;
+  sg.querySelectorAll('input.inp').forEach(function(el){ 
+    el.addEventListener('focus', function(){ npFocus(el); });
+    el.addEventListener('input', function(){
+       if(CALC.target === el){ CALC.display = el.value; cRefresh(); }
+    });
+  });
+}
+
+function npFocus(el){
+  CALC.target = el;
+  var cp = document.getElementById('calc-panel');
+  if(cp) cp.classList.add('open');
+  
+  var sg = document.getElementById('screen-game');
+  if(sg) sg.classList.add('numpad-open');
+  
+  document.querySelectorAll('input.inp').forEach(function(i){ i.classList.remove('np-active'); });
+  el.classList.add('np-active');
+
+  CALC.display = el.value || '';
+  CALC.newNum = false; 
+  CALC.justOp = false;
+  CALC.tokens = [];
+  CALC.lastExpr = '';
+  cRefresh();
+
+  setTimeout(function(){
+    var hudHeight = 60; 
+    var rect = el.getBoundingClientRect();
+    var scrollTarget = window.scrollY + rect.top - hudHeight - 80; 
+    window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+  }, 250);
+}
+
+function calcNum(d){
+  if(CALC.newNum || CALC.display === '0') {
+    if(CALC.display === '-') CALC.display = '-' + d;
+    else CALC.display = d;
+    CALC.newNum = false;
+  } else {
+    CALC.display += d;
+  }
+  CALC.justOp = false;
+  updateTarget();
+}
+
+function calcDot(){
+  if(CALC.newNum || CALC.display === '') {
+    CALC.display = '0.'; CALC.newNum = false;
+  } else if(CALC.display.indexOf('.') === -1) {
+    CALC.display += '.';
+  }
+  CALC.justOp = false;
+  updateTarget();
+}
+
+function calcFrac(){
+  if(CALC.display !== '' && CALC.display.indexOf('/') === -1 && !CALC.newNum) {
+    CALC.display += '/';
+    updateTarget();
+  }
+}
+
+function calcSqrtSym(){
+  if(CALC.newNum || CALC.display === '') { CALC.display = '√'; CALC.newNum = false; }
+  else if(CALC.display === '-') { CALC.display = '-√'; }
+  else if(CALC.display.indexOf('√') === -1) { CALC.display = '√' + CALC.display; }
+  CALC.justOp = false;
+  updateTarget();
+}
+
+// Подобрен бутон x² (хваща и блокове в скоби)
+function calcSq(){
+  if (CALC.display !== '') {
+      var v = parseCalcVal(CALC.display);
+      CALC.display = String(parseFloat((v*v).toPrecision(10)));
+      CALC.newNum = true;
+      CALC.justOp = false;
+      updateTarget();
+  } else if (CALC.tokens.length > 0 && CALC.tokens[CALC.tokens.length-1] === ')') {
+      var openCount = 0;
+      var openIdx = -1;
+      for (var i = CALC.tokens.length - 1; i >= 0; i--) {
+          if (CALC.tokens[i] === ')') openCount++;
+          if (CALC.tokens[i] === '(') openCount--;
+          if (openCount === 0) { openIdx = i; break; }
+      }
+      if (openIdx !== -1) {
+          var slice = CALC.tokens.slice(openIdx + 1, CALC.tokens.length - 1);
+          var valInside = evaluateTokens(slice);
+          if (isNaN(valInside)) valInside = 0;
+          var sqVal = parseFloat((valInside * valInside).toPrecision(10));
+          
+          CALC.tokens.splice(openIdx, CALC.tokens.length - openIdx, String(sqVal));
+          CALC.justOp = false;
+          CALC.newNum = true;
+          updateTarget();
+      }
+  }
+}
+
+// Умен минус
+function calcMinus(){
+  var last = CALC.tokens.length > 0 ? CALC.tokens[CALC.tokens.length-1] : '';
+  var lastIsNumOrParen = last === ')' || (last !== '' && ['+','-','*','/','('].indexOf(last) === -1);
+  
+  // Ако дисплеят е празен, но последното в паметта е число/скоба (напр. след x²) -> това е оператор изваждане
+  if (CALC.display === '' && lastIsNumOrParen && !CALC.justOp) {
+      calcOp('-'); return; 
+  }
+  
+  if (CALC.display === '' || CALC.justOp) {
+     CALC.display = '-'; CALC.newNum = false; CALC.justOp = false; updateTarget();
+  } else {
+     calcOp('-');
+  }
+}
+
+// Скоби с автоматично разпознаване на умножението
+function calcParen(p) {
+    if (p === '(') {
+        if (!CALC.justOp && CALC.display !== '' && CALC.display !== '-') {
+            CALC.tokens.push(CALC.display, '*');
+        } else if (CALC.tokens.length > 0 && CALC.tokens[CALC.tokens.length-1] === ')') {
+            CALC.tokens.push('*');
+        }
+        CALC.tokens.push('(');
+        CALC.justOp = true;
+        CALC.newNum = true;
+        CALC.display = '';
+    } else {
+        var openCount = 0;
+        for(var i=0; i<CALC.tokens.length; i++){
+            if(CALC.tokens[i]==='(') openCount++;
+            if(CALC.tokens[i]===')') openCount--;
+        }
+        if(openCount <= 0) return;
+
+        if(!CALC.justOp && CALC.display !== '' && CALC.display !== '-') {
+            CALC.tokens.push(CALC.display);
+        }
+        CALC.tokens.push(')');
+        CALC.justOp = false;
+        CALC.newNum = true;
+        CALC.display = '';
+    }
+    cRefresh();
+}
+
+function calcOp(op){
+  var last = CALC.tokens.length > 0 ? CALC.tokens[CALC.tokens.length-1] : '';
+  var lastIsNumOrParen = last === ')' || (last !== '' && ['+','-','*','/','('].indexOf(last) === -1);
+
+  if (CALC.justOp) {
+      if (CALC.tokens.length > 0 && ['+','-','*','/'].indexOf(last) !== -1) {
+          CALC.tokens[CALC.tokens.length-1] = op;
+      } else if (lastIsNumOrParen) {
+          CALC.tokens.push(op);
+      }
+      cRefresh();
+      return;
+  }
+  
+  if (CALC.display === '' || CALC.display === '-') {
+      if (lastIsNumOrParen) {
+          CALC.tokens.push(op); CALC.justOp = true; cRefresh();
+      }
+      return;
+  }
+  
+  CALC.tokens.push(CALC.display, op);
+  CALC.newNum = true; CALC.justOp = true; cRefresh();
+}
+
+function parseCalcVal(s) {
+   if(!s) return 0; s = String(s).replace(/\s+/g, '');
+   var sign = 1; if(s.startsWith('-')) { sign = -1; s = s.substring(1); }
+   var isSqrt = false; if(s.startsWith('√')) { isSqrt = true; s = s.substring(1); }
+   var val = 0, sl = s.split('/');
+   if(sl.length === 2) { val = parseFloat(sl[0]) / parseFloat(sl[1]); } else { val = parseFloat(s); }
+   if(isNaN(val)) val = 0; if(isSqrt) val = Math.sqrt(val); return sign * val;
+}
+
+// Защитен evaluateTokens (предотвратява грешка при долепени числа без оператор)
+function evaluateTokens(toks) {
+    var str = "";
+    for(var i=0; i<toks.length; i++){
+        var tk = toks[i];
+        if(['+','-','*','/','(',')'].indexOf(tk) !== -1) {
+            if (tk === '(' && i > 0 && ['+','-','*','/','('].indexOf(toks[i-1]) === -1) { 
+                str += '*' + tk; 
+            } else { 
+                str += tk; 
+            }
+        } else {
+            var numStr = '(' + parseCalcVal(tk) + ')';
+            if (i > 0 && toks[i-1] === ')') { 
+                str += '*' + numStr; 
+            } else if (i > 0 && ['+','-','*','/','('].indexOf(toks[i-1]) === -1) {
+                // Добавяме +, ако има две залепени числа (напр. 16 и -4)
+                str += '+' + numStr; 
+            } else { 
+                str += numStr; 
+            }
+        }
+    }
+    try { return new Function('return ' + str)(); } catch(e) { return NaN; }
+}
+
+function calcEquals(){
+  if(CALC.tokens.length === 0 && !CALC.display) return;
+  var evalToks = CALC.tokens.slice();
+  if(!CALC.justOp && CALC.display !== '' && CALC.display !== '-') { evalToks.push(CALC.display); } 
+  else if (evalToks.length > 0 && ['+','-','*','/'].indexOf(evalToks[evalToks.length-1]) !== -1) { evalToks.pop(); }
+  
+  var openCount = 0;
+  for(var i=0; i<evalToks.length; i++){ if(evalToks[i]==='(') openCount++; if(evalToks[i]===')') openCount--; }
+  while(openCount > 0) { evalToks.push(')'); openCount--; }
+
+  var res = evaluateTokens(evalToks);
+  if (isNaN(res) || !isFinite(res)) res = 0;
+  var oldExpr = evalToks.join(' ').replace(/\*/g, '×').replace(/\//g, '÷');
+  
+  CALC.display = String(parseFloat(res.toPrecision(10)));
+  CALC.tokens = []; CALC.newNum = true; CALC.justOp = false; CALC.lastExpr = oldExpr + ' =';
+  updateTarget();
+}
+
+function calcDel(){
+  if(CALC.newNum) { calcClear(); return; }
+  CALC.display = CALC.display.length > 1 ? CALC.display.slice(0, -1) : '';
+  if(CALC.display === '-') CALC.display = ''; updateTarget();
+}
+
+function calcClear(){ CALC.display = ''; CALC.tokens = []; CALC.lastExpr = ''; CALC.justOp = false; CALC.newNum = true; updateTarget(); }
+
+function updateTarget(){ cRefresh(); if(CALC.target){ CALC.target.value = CALC.display; } }
+
+function cRefresh(){
+  var d=document.getElementById('calc-result'), e=document.getElementById('calc-expr');
+  if(d) d.textContent = CALC.display || '';
+  if(CALC.tokens.length > 0) { e.textContent = CALC.tokens.join(' ').replace(/\*/g, '×').replace(/\//g, '÷'); } 
+  else if(CALC.lastExpr) { e.textContent = CALC.lastExpr; } else { e.textContent = ''; }
+}
+
+function calcClose(){
+  if(CALC.tokens.length > 0) { calcEquals(); } 
+  var cp = document.getElementById('calc-panel'); if(cp) cp.classList.remove('open');
+  var sg = document.getElementById('screen-game'); if(sg) sg.classList.remove('numpad-open');
+  document.querySelectorAll('input.inp').forEach(function(i){ i.classList.remove('np-active'); });
+  if(CALC.target){ var sgGrid = document.getElementById('steps-grid'); if(sgGrid){ var inputs = Array.from(sgGrid.querySelectorAll('input.inp')); var idx = inputs.indexOf(CALC.target); if(idx >= 0 && idx < inputs.length - 1){ inputs[idx + 1].focus(); } } }
+}
+
+/* Използване на физическата клавиатура */
+document.addEventListener('keydown',function(e){
+  var p=document.getElementById('calc-panel');if(!p||!p.classList.contains('open'))return;
+  if(document.activeElement && document.activeElement.tagName === 'INPUT') return;
+  if(e.key>='0'&&e.key<='9'){calcNum(e.key);e.preventDefault();} 
+  else if(e.key==='.'){calcDot();e.preventDefault();} 
+  else if(e.key==='+'){calcOp('+');e.preventDefault();} 
+  else if(e.key==='-'){calcMinus();e.preventDefault();} 
+  else if(e.key==='*'){calcOp('*');e.preventDefault();} 
+  else if(e.key==='/'){calcOp('/');e.preventDefault();} 
+  else if(e.key==='('){calcParen('(');e.preventDefault();} 
+  else if(e.key===')'){calcParen(')');e.preventDefault();} 
+  else if(e.key==='Enter'||e.key==='='){calcEquals();e.preventDefault();} 
+  else if(e.key==='Backspace'){calcDel();e.preventDefault();} 
+  else if(e.key==='Escape'){calcClose();}
+});
+
+/* ════ DEMO ════ */
+var demoT=[];
+function showDemo(){
+  demoT.forEach(clearTimeout);demoT=[];
+  ['demo-s1','demo-s2','demo-s3','demo-result','demo-tip'].forEach(function(id){ var el=document.getElementById(id);if(!el)return;el.style.opacity='0';el.style.transform='translateX(-14px)'; });
+  ['dfa','dfb','dfc','dfd','dfx1','dfx2'].forEach(function(id){ var el=document.getElementById(id);if(el){el.textContent='';el.className='demo-field';} });
+  var cb=document.getElementById('demo-close-btn');if(cb){cb.style.opacity='0';cb.style.pointerEvents='none';}
+  document.getElementById('demo-overlay').classList.remove('hidden');
+
+  function show(id,delay,cb2){ demoT.push(setTimeout(function(){ var el=document.getElementById(id);if(!el)return;el.style.opacity='1';el.style.transform='translateX(0)';if(cb2)cb2(); },delay)); }
+  function type(id,val,delay,cb2){ demoT.push(setTimeout(function(){ var el=document.getElementById(id);if(!el)return;el.className='demo-field typing';var s=String(val),i=0;el.textContent='';
+      var iv=setInterval(function(){ if(i<s.length){el.textContent+=s[i];i++;}else{clearInterval(iv);el.className='demo-field done';if(cb2)cb2();} },90); },delay)); }
+
+  show('demo-s1', 300, function(){ type('dfa','1',  500, function(){ type('dfb','−5', 400, function(){ type('dfc','6',  400, function(){
+          show('demo-s2', 300, function(){ type('dfd','1', 700, function(){ show('demo-s3', 300, function(){ type('dfx1','3', 700, function(){
+                  type('dfx2','2', 400, function(){ demoT.push(setTimeout(function(){ var r=document.getElementById('demo-result');if(r){r.style.opacity='1';} var tip=document.getElementById('demo-tip');if(tip)tip.style.opacity='1'; var btn=document.getElementById('demo-close-btn');if(btn){btn.style.opacity='1';btn.style.pointerEvents='auto';} },400));
+                  }); }); }); }); }); }); }); }); });
+}
+function hideDemo(){ demoT.forEach(clearTimeout);demoT=[]; document.getElementById('demo-overlay').classList.add('hidden'); }
+
+/* ════ THEME ════ */
+var isDark=true;
+function toggleTheme(){
+  isDark=!isDark; document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  var icon=isDark?'🌙':'☀️';
+  document.querySelectorAll('.ro-theme-btn, .hud-theme-btn').forEach(function(b){b.textContent=icon;}); drawLadder();
+}
+
+/* ════ BG INIT ════ */
+var BG_SYMBOLS=['x²','√D','±','ax²','D=b²','x₁','x₂','∑','π','∞','f(x)','Δ'];
+function initBg(){
+  var rungsEl=document.getElementById('bg-rungs'), particlesEl=document.getElementById('bg-particles');
+  if(!rungsEl||!particlesEl)return; rungsEl.innerHTML='';particlesEl.innerHTML='';
+  for(var i=0;i<18;i++){ var d=document.createElement('div');d.className='bg-rung'; var dur=(2.2+Math.random()*1.8).toFixed(2)+'s'; var delay=(-Math.random()*4).toFixed(2)+'s'; d.style.cssText='top:'+Math.round(Math.random()*100)+'%;animation-duration:'+dur+';animation-delay:'+delay; rungsEl.appendChild(d); }
+  for(var i=0;i<40;i++){ var d=document.createElement('div');d.className='bg-dot'; var sz=(Math.random()*3+1.5).toFixed(1)+'px'; d.style.cssText='width:'+sz+';height:'+sz+';left:'+Math.round(Math.random()*100)+'%;bottom:-20px;animation-duration:'+(6+Math.random()*10).toFixed(1)+'s;animation-delay:'+(-Math.random()*10).toFixed(1)+'s;--drift:'+((Math.random()-0.5)*80).toFixed(0)+'px'; particlesEl.appendChild(d); }
+  for(var i=0;i<14;i++){ var d=document.createElement('div');d.className='bg-sym'; d.style.cssText='font-size:'+(10+Math.random()*8).toFixed(0)+'px;left:'+Math.round(Math.random()*90)+'%;bottom:-30px;animation-duration:'+(8+Math.random()*12).toFixed(1)+'s;animation-delay:'+(-Math.random()*12).toFixed(1)+'s'; d.textContent=BG_SYMBOLS[Math.floor(Math.random()*BG_SYMBOLS.length)]; particlesEl.appendChild(d); }
+}
+window.addEventListener('resize',function(){initBg();drawLadder();}); initBg();
+
+/* ════ LADDER VIZ ════ */
+var climberRaf=null;
+function drawLadder(){
+  var rungsEl=document.getElementById('lv-rungs');if(!rungsEl)return; var totalSteps=G.levelSteps?G.levelSteps.length:3;
+  rungsEl.innerHTML=''; var rungSpacePct=80/totalSteps;
+  for(var i=0;i<totalSteps;i++){
+    var st=(G.levelSteps&&G.levelSteps[i])||'empty'; var bottomPct=10+i*rungSpacePct; var rung=document.createElement('div'); rung.className='lv-rung '+st; rung.style.bottom=bottomPct+'%';
+    var num=document.createElement('span');num.className='lv-rung-num';num.textContent=i+1; rung.appendChild(num); rungsEl.appendChild(rung);
+  }
+  var cur=G.levelStepCount||0; var targetPct=10+Math.min(cur,totalSteps-1)*rungSpacePct; if(cur>=totalSteps)targetPct=10+totalSteps*rungSpacePct+8;
+  var climber=document.getElementById('lv-climber'); if(climber){ climber.style.bottom=targetPct+'%'; climber.classList.toggle('at-top',cur>=totalSteps); }
+}
+function animatePerson(target){
+  var climber=document.getElementById('lv-climber');if(!climber)return; var lv=G.levelSteps?G.levelSteps.length:3; var rsp=80/lv; var targetPct=10+Math.min(target,lv-1)*rsp; if(target>=lv)targetPct=10+lv*rsp+8;
+  climber.style.bottom=targetPct+'%'; climber.classList.remove('climbing','falling'); void climber.offsetWidth;
+  climber.classList.add(target>=(G.levelStepCount||0)?'climbing':'falling'); setTimeout(function(){climber.classList.remove('climbing','falling');},500);
+}
+
+/* ════ MATH HELPERS ════ */
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){var t=b;b=a%b;a=t;}return a||1;}
+function fracStr(n,d){if(d<0){n=-n;d=-d;}var g=gcd(Math.abs(n),Math.abs(d));n/=g;d/=g;return d===1?String(n):n+'/'+d;}
+function ri(lo,hi){return lo+Math.floor(Math.random()*(hi-lo+1));}
+function ra(a){return a[Math.floor(Math.random()*a.length)];}
+
+function genBase(diff){
+  var a,b,c,D,att=0;
+  while(att++<500){
+    if(diff==='easy'){ a=1; var x1=ri(-5,5), x2=ri(-5,5); if(x1===0&&x2===0)continue; b=-(x1+x2); c=x1*x2; }
+    else if(diff==='med'){ a=ra([1,2,3,4]); var p1=ri(-6,6), q1=ra([1,1,2]), p2=ri(-6,6), q2=ra([1,1,2]); if(p1===0&&p2===0)continue; var bN=-a*(p1*q2+p2*q1), bD=q1*q2, cN=a*p1*p2, cD=q1*q2; if(bN%bD!==0||cN%cD!==0)continue; b=bN/bD; c=cN/cD; }
+    else { a=ra([2,3,4,5]); b=ri(-15,15); c=ri(-15,15); if(c===0)continue; }
+    
+    D=b*b-4*a*c; if(D<0)continue; var sqD=Math.round(Math.sqrt(D)); if(sqD*sqD!==D)continue; if(a===0||(b===0&&c===0))continue;
+    var nb=-b, pf=function(n,d){var g=gcd(Math.abs(n),Math.abs(d));return{n:n/g,d:d/g};}; var r1=pf(nb+sqD,2*a), r2=pf(nb-sqD,2*a);
+    return{a:a,b:b,c:c,D:D,sqD:sqD,x1str:fracStr(nb+sqD,2*a),x2str:fracStr(nb-sqD,2*a),x1n:r1.n,x1d:r1.d,x2n:r2.n,x2d:r2.d};
+  }
+  return{a:1,b:-5,c:6,D:1,sqD:1,x1str:'3',x2str:'2',x1n:3,x1d:1,x2n:2,x2d:1};
+}
+
+function genIntBase(diff){
+  var lim=diff==='hard'?15:diff==='med'?9:5;
+  for(var att=0;att<500;att++){ var x1=ri(-lim,lim),x2=ri(-lim,lim); if(x1===0&&x2===0||x1===x2)continue; var a=1, b=-(x1+x2), c=x1*x2; return{a:a,b:b,c:c,D:b*b-4*c,x1str:String(x1),x2str:String(x2),x1n:x1,x2n:x2,sumVal:x1+x2,prodVal:x1*x2}; }
+  return{a:1,b:-5,c:6,D:1,x1str:'3',x2str:'2',x1n:3,x2n:2,sumVal:5,prodVal:6};
+}
+
+function genNPSBase(){
+  for(var att=0;att<800;att++){ var a=ri(1,2),b=ri(-8,8),c=ri(-8,8);if(c===0||b===0)continue; var D=b*b-4*a*c;if(D<=0)continue; var sqD=Math.floor(Math.sqrt(D));if(sqD*sqD===D)continue; if(b%a!==0||c%a!==0)continue; var S=-b/a,P=c/a; if(Math.abs(S)>12||Math.abs(P)>12)continue; return{a:a,b:b,c:c,D:D,S:S,P:P}; }
+  return{a:1,b:-3,c:1,D:5,S:3,P:1};
+}
+
+var SYMM_EXPRS=[
+  function(S,P){return{str:'x₁² + x₂²',val:S*S-2*P,hint:'(x₁+x₂)²−2·x₁x₂'};},
+  function(S,P){return{str:'(x₁ − x₂)²',val:S*S-4*P,hint:'(x₁+x₂)²−4·x₁x₂'};},
+  function(S,P){return{str:'x₁³ + x₂³',val:S*(S*S-3*P),hint:'(x₁+x₂)³−3·x₁x₂·(x₁+x₂)'};},
+  function(S,P){return{str:'x₁² · x₂²',val:P*P,hint:'(x₁·x₂)²'};},
+  function(S,P){return{str:'x₁² + x₁x₂ + x₂²',val:S*S-P,hint:'(x₁+x₂)²−x₁x₂'};},
+  function(S,P){return{str:'x₁² − x₁x₂ + x₂²',val:S*S-3*P,hint:'(x₁+x₂)²−3·x₁x₂'};},
+  function(S,P){return{str:'x₁²x₂ + x₁x₂²',val:P*S,hint:'x₁x₂·(x₁+x₂)'};},
+  function(S,P){return{str:'(x₁+x₂)²',val:S*S,hint:'директно (x₁+x₂)²'};},
+  function(S,P){return{str:'x₁⁴ + x₂⁴',val:(S*S-2*P)*(S*S-2*P)-2*P*P,hint:'(x₁²+x₂²)²−2(x₁x₂)²'};},
+  function(S,P){return{str:'(x₁²−x₂²)²',val:(S*S-4*P)*S*S,hint:'(x₁−x₂)²·(x₁+x₂)²'};},
+];
+function genSymmQ(idx){
+  var exprIdx=ri(0,SYMM_EXPRS.length-1);
+  for(var att=0;att<500;att++){ var base=genNPSBase();var S=base.S,P=base.P; var ex=SYMM_EXPRS[exprIdx](S,P);var val=ex.val; if(!Number.isInteger(val))continue;if(Math.abs(val)>200)continue; return{type:'symm',a:base.a,b:base.b,c:base.c,D:base.D,S:S,P:P,exprStr:ex.str,exprVal:val,exprHint:ex.hint}; }
+  return{type:'symm',a:1,b:-3,c:1,D:5,S:3,P:1,exprStr:'x₁² + x₂²',exprVal:7,exprHint:'(x₁+x₂)²−2·x₁x₂'};
+}
+function simplifyRoot(n){ if(n<=0)return null;var k=1,r=n; for(var i=Math.floor(Math.sqrt(n));i>=2;i--){if(n%(i*i)===0){k=i;r=n/(i*i);break;}} return{k:k,r:r}; }
+function rootStr(n,neg){ var sr=simplifyRoot(n);if(!sr)return'?'; var prefix=neg?'−':''; if(sr.r===1)return prefix+String(sr.k); if(sr.k===1)return prefix+'√'+sr.r; return prefix+sr.k+'√'+sr.r; }
+
+function genBiquad(level){
+  var caseWeights; if(level<=2)caseWeights=[0,0,0,0,0]; else if(level===3)caseWeights=[0,0,0,1,1]; else caseWeights=[0,0,1,1,2];
+  var caseType=ra(caseWeights), tMax=4+level*2;
+  for(var att=0;att<400;att++){
+    if(caseType===0){ var t1=ri(1,tMax),t2=ri(1,tMax);if(t1===t2)continue; var B=-(t1+t2),C=t1*t2; var sr1=simplifyRoot(t1),sr2=simplifyRoot(t2); return{type:'biquad',caseType:0,B:B,C:C,t1:t1,t2:t2,eqStr:biqStr(B,C), roots:[{val:Math.sqrt(t1),sr:sr1,sign:1},{val:Math.sqrt(t1),sr:sr1,sign:-1},{val:Math.sqrt(t2),sr:sr2,sign:1},{val:Math.sqrt(t2),sr:sr2,sign:-1}]}; }
+    else if(caseType===1){ var t1=ri(1,tMax),t2=ri(1,Math.max(2,Math.floor(tMax/2)));if(t1===t2)continue; var tneg=-t2,B=-(t1+tneg),C=t1*tneg,sr1=simplifyRoot(t1); return{type:'biquad',caseType:1,B:B,C:C,t1:t1,t2:tneg,eqStr:biqStr(B,C), roots:[{val:Math.sqrt(t1),sr:sr1,sign:1},{val:Math.sqrt(t1),sr:sr1,sign:-1}]}; }
+    else { var t1=ri(1,6),t2=ri(1,6);if(t1===t2)continue; var B=t1+t2,C=t1*t2; return{type:'biquad',caseType:2,B:B,C:C,t1:-t1,t2:-t2,eqStr:biqStr(B,C),roots:[]}; }
+  }
+  var sr1=simplifyRoot(3),sr2=simplifyRoot(2); return{type:'biquad',caseType:0,B:-5,C:6,t1:3,t2:2,eqStr:biqStr(-5,6), roots:[{val:Math.sqrt(3),sr:sr1,sign:1},{val:Math.sqrt(3),sr:sr1,sign:-1},{val:Math.sqrt(2),sr:sr2,sign:1},{val:Math.sqrt(2),sr:sr2,sign:-1}]};
+}
+
+function levelDiff(){ var matrix={easy:['easy','easy','easy','med','med'],med:['easy','med','med','hard','hard'],hard:['med','med','hard','hard','hard']}; return(matrix[G.diff]||matrix['med'])[Math.min(G.level,4)]; }
+var QTYPES_BY_LEVEL=[['standard','vieta'],['standard','vieta','compose','factor'],['standard','vieta','compose','factor','biquad'],['standard','vieta','compose','factor','biquad','symm'],['standard','vieta','compose','factor','biquad','symm']];
+var QTYPES=['standard','vieta','compose','factor','biquad','symm'], Q_OFFSET=0;
+
+function genQ(diff,idx){
+  var pool=QTYPES_BY_LEVEL[Math.min(G.level,4)], effectiveDiff=levelDiff(), type=pool[(idx+Q_OFFSET)%pool.length];
+  if(type==='standard')return Object.assign({type:'standard'},genBase(effectiveDiff)); if(type==='vieta'){var b=genIntBase(effectiveDiff);return Object.assign({type:'vieta'},b);} if(type==='compose'){var b=genIntBase(effectiveDiff);return Object.assign({type:'compose'},b);} if(type==='factor')return Object.assign({type:'factor'},genBase(effectiveDiff)); if(type==='biquad')return genBiquad(G.level); if(type==='symm')return genSymmQ(idx); return Object.assign({type:'standard'},genBase(effectiveDiff));
+}
+function biqStr(B,C){var s='x⁴';if(B>0)s+=' + '+B+'x²';else if(B<0)s+=' − '+Math.abs(B)+'x²';if(C>0)s+=' + '+C;else if(C<0)s+=' − '+Math.abs(C);return s+' = 0';}
+function eqStr(a,b,c){var s=(a===1?'':a===-1?'−':a)+'x²';if(b>0)s+=' + '+b+'x';else if(b<0)s+=' − '+Math.abs(b)+'x';if(c>0)s+=' + '+c;else if(c<0)s+=' − '+Math.abs(c);return s+' = 0';}
+
+var LEVELS=[{name:'Приземен етаж',icon:'🏠',stepsToNext:3,timePerQ:90},{name:'Първи етаж',icon:'🌿',stepsToNext:4,timePerQ:80},{name:'Втори етаж',icon:'🌤',stepsToNext:5,timePerQ:65},{name:'Трети етаж',icon:'⛅',stepsToNext:6,timePerQ:55},{name:'Покривът',icon:'🏆',stepsToNext:7,timePerQ:45}];
+var TYPE_TIME_BONUS={standard:0,vieta:0,compose:0,factor:0,biquad:30,symm:60}; 
+function getTimeForQ(q){return LEVELS[G.level].timePerQ+(TYPE_TIME_BONUS[q&&q.type]||0);}
+var TYPE_STEP_BONUS={standard:1,vieta:1,compose:1,factor:1,biquad:2,symm:2}; function getStepsForQ(q){var base=TYPE_STEP_BONUS[q&&q.type]||1;if(base>1&&G.level>=3)base++;return base;}
+
+var QUOTES=[{text:'Математиката е езикът, на който Бог е написал Вселената.',src:'— Галилео Галилей'},{text:'Не се страхувай от трудното. Трудното те прави по-силен.',src:'— Народна мъдрост'},{text:'Всяка задача, която решиш, е стъпало нагоре по стълбата на знанието.',src:'— Непознат учител'},{text:'Математиката е гимнастика на ума.',src:'— Александър Сухомлински'},{text:'Трудността е само нов начин да видиш решението.',src:'— Мъдрост на стълбата'}];
+var NEW_TOPICS=['🗻 Теорема за Питагор','📐 Тригонометрия','∫ Диференциално смятане','📊 Статистика и вероятности','🔢 Теория на числата'];
+var MOTIV_MSGS=[{min:100,msg:'Перфектно! Всяко стъпало — завоювано с точност.',icon:'🏆'},{min:80, msg:'Грешките са само стъпала към върха.',icon:'⭐'},{min:60, msg:'Всеки алпинист е паднал. Важното е да се изкачиш отново.',icon:'💪'},{min:0,  msg:'Пробвай пак — всеки опит те прави по-силен.',icon:'🔥'}];
+
+/* ════ GAME STATE ════ */
+var G={name:'',klass:'',diff:'med',hints:true,level:0,levelStepCount:0,totalSteps:0, qIdx:0,ok:0,err:0,timeLeft:0,timerInt:null,checked:false,currentQ:null,levelSteps:[], hintUsed:0,typeErrors:{},hintLevel:0,_prevErr:0,retried:false,retries:0};
+
+/* ════ NAV ════ */
+function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});var el=document.getElementById(id);if(el)el.classList.add('active');}
+function goHome(){
+  clearInterval(G.timerInt);cancelAnimationFrame(climberRaf);
+  document.getElementById('lvl-overlay').classList.remove('show'); document.getElementById('summit').classList.remove('show'); document.getElementById('calc-panel').classList.remove('open');
+  showEntryScreen();
+}
+function confirmHome(){if(confirm('Сигурен ли си? Играта ще започне ОТНАЧАЛО!'))goHome();}
+document.addEventListener('visibilitychange',function(){if(document.hidden&&document.getElementById('screen-game').classList.contains('active')){clearInterval(G.timerInt);goHome();}});
+
+/* ════ ENTRY SCREEN & LOCALSTORAGE ════ */
+function initRulesParticles(){
+  var el=document.getElementById('intro-particles');if(!el)return;el.innerHTML='';
+  var syms=['x²','√D','±','ax²','x₁','x₂','∑','π','Δ','b²','4ac'];
+  for(var i=0;i<18;i++){
+    var d=document.createElement('div');var isSym=i%3===0; d.className=isSym?'ro-math':'ro-particle';
+    var sz=isSym?(12+Math.random()*14).toFixed(0)+'px':(4+Math.random()*8).toFixed(1)+'px'; var left=Math.round(Math.random()*95)+'%'; var dur=(6+Math.random()*10).toFixed(1)+'s'; var delay=(-Math.random()*10).toFixed(1)+'s'; var rx=((Math.random()-0.5)*120).toFixed(0)+'px'; var rr=((Math.random()-0.5)*40).toFixed(0)+'deg';
+    if(isSym){d.style.cssText='font-size:'+sz+';left:'+left+';bottom:-40px;animation-duration:'+dur+';animation-delay:'+delay+';--rx:'+rx+';--rr:'+rr;d.textContent=syms[Math.floor(Math.random()*syms.length)];} else{d.style.cssText='width:'+sz+';height:'+sz+';left:'+left+';bottom:-20px;animation-duration:'+dur+';animation-delay:'+delay+';--rx:'+rx+';--rr:'+rr;}
+    el.appendChild(d);
+  }
+}
+function showEntryScreen(){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var inp=document.getElementById('ro-name');if(inp){inp.classList.remove('error');inp.value='';}
+  var clsInp=document.getElementById('ro-class');if(clsInp)clsInp.value='';
+  var err=document.getElementById('ro-name-err');if(err)err.classList.remove('show');
+  initRulesParticles();
+
+  try { var saved = localStorage.getItem('matStalba_profile'); if(saved) { var parsed = JSON.parse(saved); if(parsed.name && inp) inp.value = parsed.name; if(parsed.klass && clsInp) clsInp.value = parsed.klass; } } catch(e) {}
+  
+  document.getElementById('welcome-overlay').classList.remove('hidden');
+  document.getElementById('rules-overlay').classList.add('hidden');
+  setTimeout(function(){var n=document.getElementById('ro-name');if(n)n.focus();},400);
+}
+
+function goToRules(){
+  var nameVal=(document.getElementById('ro-name').value||'').trim();
+  if(!nameVal){
+    var inp=document.getElementById('ro-name'); inp.classList.add('error');inp.focus();
+    var err=document.getElementById('ro-name-err'); if(err){err.textContent='⚠ Моля, напиши името си преди да започнеш!';err.classList.add('show');}
+    var box=document.querySelector('#welcome-overlay .rules-box'); box.style.animation='none';void box.offsetWidth;box.style.animation='screenShake 0.4s ease'; setTimeout(function(){box.style.animation='';},500); return;
+  }
+  G.name=nameVal; G.klass=(document.getElementById('ro-class').value||'').trim()||'—';
+  try { localStorage.setItem('matStalba_profile', JSON.stringify({name: G.name, klass: G.klass})); } catch(e) {}
+  
+  document.getElementById('welcome-overlay').classList.add('hidden');
+  document.getElementById('rules-overlay').classList.remove('hidden');
+  var rb = document.getElementById('rules-inner-box');
+  rb.style.animation='none'; void rb.offsetWidth; rb.style.animation='roBounceIn .7s cubic-bezier(.34,1.56,.64,1) both';
+}
+
+function startFromRules(){
+  G.diff=document.getElementById('ro-diff').value; G.hints=document.getElementById('ro-hint').value==='1';
+  G.level=0;G.levelStepCount=0;G.totalSteps=0;G.qIdx=0;G.ok=0;G.err=0;G.checked=false;
+  G.hintUsed=0;G.typeErrors={};G._prevErr=0;G.retries=0;G.retried=false;
+  Q_OFFSET=ri(0,QTYPES.length-1);
+  document.getElementById('rules-overlay').classList.add('hidden');
+  document.getElementById('hud-name').textContent='🧗 '+G.name;
+  showScreen('screen-game'); startLevel();
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  DOM.timerBar = document.getElementById('timer-bar'); DOM.timerChip = document.getElementById('timer-chip'); DOM.hudTimer = document.getElementById('hud-timer');
+  var n=document.getElementById('ro-name'); if(n){ n.addEventListener('keydown',function(e){if(e.key==='Enter')goToRules();}); n.addEventListener('input',function(){ n.classList.remove('error'); var err=document.getElementById('ro-name-err');if(err)err.classList.remove('show'); }); }
+  showEntryScreen();
+});
+
+/* ════ RETRY ════ */
+function retryQuestion(){
+  if(G.retried)return;G.retried=true;G.checked=false; var q=G.currentQ;
+  document.getElementById('hint-box').style.display='none'; document.getElementById('fb-msg').textContent='';document.getElementById('fb-msg').className='fb-msg';
+  document.getElementById('btn-check').style.opacity='1';document.getElementById('btn-check').style.pointerEvents='auto'; document.getElementById('btn-next').disabled=true;document.getElementById('btn-next').textContent='Напред →';
+  document.getElementById('btn-retry').style.display='none';
+  if(G.hints){var hBtn=document.getElementById('btn-hint-req');hBtn.style.display='inline-flex';G.hintLevel=Math.min(G.hintLevel,1);hBtn.textContent='💡 Подсказка';}
+  G.retries=(G.retries||0)+1; buildInputs(q);startTimer();
+}
+
+/* ════ TIERED HINTS ════ */
+var HINT_TIERS={
+  standard:[ function(q){return'Метод: дискриминанта D = b²−4ac. Намери a, b, c от уравнението.';}, function(q){return'Пресметни D = '+q.b+'² − 4·'+q.a+'·'+q.c+' = '+q.D+'.';}, function(q){return'Корени: x₁='+q.x1str+', x₂='+q.x2str+'.';} ],
+  vieta:[ function(q){return'Метод: формули на Виет — x₁+x₂=−b/a и x₁·x₂=c/a.';}, function(q){return'x₁+x₂='+q.sumVal+', x₁·x₂='+q.prodVal+'. Намери двете числа.';}, function(q){return'Корени: x₁='+q.x1str+', x₂='+q.x2str+'.';} ],
+  compose:[ function(q){return'Метод: с дадени корени намери b=−(x₁+x₂) и c=x₁·x₂ при a=1.';}, function(q){var s=parseInt(q.x1str)+parseInt(q.x2str),p=parseInt(q.x1str)*parseInt(q.x2str);return'Сбор: '+q.x1str+'+'+q.x2str+'='+s+', произведение: '+q.x1str+'·'+q.x2str+'='+p+'.';}, function(q){return'Уравнението: '+eqStr(q.a,q.b,q.c)+'.';} ],
+  factor:[ function(q){return'Метод: намери корените чрез дискриминантата, после запиши a(x−x₁)(x−x₂).';}, function(q){return'Корени: x₁='+q.x1str+', x₂='+q.x2str+'.';}, function(q){return'Разложение: '+q.a+'(x−'+q.x1str+')(x−'+q.x2str+').';} ],
+  biquad:[ function(q){return'Метод: смяна t=x². Реши квадратното по t, после x=±√t.';}, function(q){var r=q.roots.length;return'Корени по t: t₁='+q.t1+', t₂='+q.t2+(r===0?' (и двете отрицателни → няма реални х)':r===2?' (само t₁>0 → два реални корена)':' (и двете >0 → четири реални корена)')+'.';}, function(q){var r=q.roots.length;if(r===0)return'Няма реални корени.';if(r===2)return'x='+rootStr(q.t1,false)+', '+rootStr(q.t1,true)+'.';return'x='+rootStr(q.t1,false)+', '+rootStr(q.t1,true)+', '+rootStr(q.t2,false)+', '+rootStr(q.t2,true)+'.';} ],
+  symm:[ function(q){return'Метод: формули на Виет — намери x₁+x₂='+q.S+' и x₁·x₂='+q.P+', после пресметни '+q.exprStr+'.';}, function(q){return'x₁+x₂='+q.S+', x₁·x₂='+q.P+'. Приложи формулата: '+q.exprHint+'.';}, function(q){return'Резултат: '+q.exprStr+' = '+q.exprVal+'.';} ],
+};
+function requestHint(){
+  if(!G.currentQ)return; var tiers=HINT_TIERS[G.currentQ.type];if(!tiers)return;
+  var level=Math.min(G.hintLevel,tiers.length-1); var msg=tiers[level](G.currentQ);
+  var hb=document.getElementById('hint-box'); var labels=['💡 Метод:','🔍 Стъпка:','✅ Решение:'];
+  hb.textContent=(labels[level]||'💡')+' '+msg;hb.style.display='block';
+  G.hintLevel=Math.min(G.hintLevel+1,tiers.length-1);G.hintUsed++;
+  var btn=document.getElementById('btn-hint-req'); if(G.hintLevel>=tiers.length-1)btn.textContent='✅ Решение'; else btn.textContent='💡 Подсказка '+(G.hintLevel+1)+'/3';
+}
+
+/* ════ LEVEL ════ */
+function startLevel(){
+  var lv=LEVELS[G.level]; G.qIdx=0;G.levelStepCount=0; G.levelSteps=[];for(var i=0;i<lv.stepsToNext;i++)G.levelSteps.push('empty'); G.levelSteps[0]='current';
+  document.getElementById('hud-level').textContent=G.level+1; document.getElementById('hud-max').textContent=lv.stepsToNext; document.getElementById('hud-step').textContent=0;
+  document.getElementById('lvl-label-num').textContent=G.level+1; document.getElementById('lvl-label-sub').textContent=lv.name;
+  buildStepsList();drawLadder();nextQuestion();
+}
+function buildStepsList(){
+  var lv=LEVELS[G.level],el=document.getElementById('steps-list');el.innerHTML='';
+  for(var i=lv.stepsToNext-1;i>=0;i--){
+    var st=G.levelSteps[i]||'empty'; var div=document.createElement('div');div.className='step-item '+st;
+    var dot=document.createElement('div');dot.className='step-dot '+st;dot.textContent=st==='done'?'✓':st==='fail'?'✗':(i+1);
+    var txt=document.createElement('div');txt.className='step-text '+st; txt.textContent=i===lv.stepsToNext-1?lv.icon+' '+lv.name:'Стъпало '+(i+1);
+    var ic=document.createElement('div');ic.className='step-icon'; ic.textContent=st==='done'?'✅':st==='current'?'🧗':st==='fail'?'💥':'⬜';
+    div.appendChild(dot);div.appendChild(txt);div.appendChild(ic);el.appendChild(div);
+  }
+}
+
+/* ════ STEP LOGIC ════ */
+function stepForward(n){
+  n=n||1;var lv=LEVELS[G.level];
+  for(var i=0;i<n;i++){ if(G.levelStepCount<lv.stepsToNext)G.levelSteps[G.levelStepCount]='done'; G.levelStepCount++;G.totalSteps++; if(G.levelStepCount<lv.stepsToNext)G.levelSteps[G.levelStepCount]='current'; if(G.levelStepCount>=lv.stepsToNext)break; }
+  document.getElementById('hud-step').textContent=Math.min(G.levelStepCount,lv.stepsToNext); buildStepsList();animatePerson(G.levelStepCount);
+  if(G.levelStepCount>=lv.stepsToNext)setTimeout(showLevelComplete,950);
+}
+function stepBack(){
+  var flash=document.getElementById('fall-flash'); if(flash){flash.style.display='block';flash.style.animation='none';void flash.offsetWidth;flash.style.animation='fallFlash .65s ease forwards';setTimeout(function(){flash.style.display='none';},700);}
+  var gameEl=document.getElementById('screen-game'); if(gameEl){gameEl.classList.remove('shaking');void gameEl.offsetWidth;gameEl.classList.add('shaking');setTimeout(function(){gameEl.classList.remove('shaking');},520);}
+  if(G.levelStepCount>0){ G.levelSteps[G.levelStepCount]='empty';G.levelStepCount=Math.max(0,G.levelStepCount-1); G.levelSteps[G.levelStepCount]='fail';buildStepsList();drawLadder(); setTimeout(function(){G.levelSteps[G.levelStepCount]='current';buildStepsList();drawLadder();},550); }
+  else{ G.levelSteps[0]='fail';buildStepsList();drawLadder(); setTimeout(function(){G.levelSteps[0]='current';buildStepsList();drawLadder();},550); }
+  animatePerson(G.levelStepCount); document.getElementById('hud-step').textContent=G.levelStepCount;
+}
+
+/* ════ QUESTION RENDER ════ */
+function nextQuestion(){
+  G.checked=false;G.hintLevel=0;G.retried=false; G.currentQ=genQ(G.diff,G.qIdx++);
+  document.getElementById('hint-box').style.display='none'; document.getElementById('fb-msg').textContent='';document.getElementById('fb-msg').className='fb-msg';
+  var bc=document.getElementById('btn-check');bc.style.opacity='1';bc.style.pointerEvents='auto';
+  var bn=document.getElementById('btn-next');bn.disabled=true;bn.textContent='Напред →';
+  document.getElementById('btn-retry').style.display='none'; document.getElementById('btn-hint-req').style.display='none';
+  
+  calcClose(); 
+  renderQ(G.currentQ);startTimer();
+}
+var TCOLORS={standard:'#ffe44d',vieta:'#c084fc',compose:'#34d399',factor:'#fb923c',biquad:'#38bdf8',symm:'#fb7185'};
+var TNAMES={standard:'СТАНДАРТНО',vieta:'ФОРМУЛИ НА ВИЕТ',compose:'СЪСТАВЯНЕ',factor:'РАЗЛАГАНЕ',biquad:'БИКВАДРАТНО',symm:'СИМЕТРИЧНО ИЗРАЗЧЕ'};
+function renderQ(q){
+  var badge=document.getElementById('q-type-badge'),col=TCOLORS[q.type]||'#fff';
+  badge.textContent=TNAMES[q.type];badge.style.background=col+'22';badge.style.border='1.5px solid '+col+'77';badge.style.color=col;
+  var d=document.getElementById('q-display');
+  if(q.type==='biquad')d.textContent=q.eqStr; else if(q.type==='compose')d.textContent='x₁ = '+q.x1str+'   ,   x₂ = '+q.x2str; else d.textContent=eqStr(q.a,q.b,q.c);
+  buildInputs(q);
+}
+
+function ninp(id,ph,w){return '<input class="inp'+(w?' '+w:'')+'" id="'+id+'" placeholder="'+ph+'" inputmode="none" autocomplete="off" autocorrect="off" spellcheck="false">';}
+function srow(num,lbl,cnt){return '<div class="step-row"><div class="step-n">'+num+'</div><div class="step-lbl">'+lbl+'</div>'+cnt+'</div>';}
+function opL(t){return '<span class="op-lbl">'+t+'</span>';}
+function sqrtInp(id,negative){ var prefix=negative?'<span class="sqrt-prefix neg" onclick="insertSqrt(\''+id+'\',true)">−√</span>':'<span class="sqrt-prefix" onclick="insertSqrt(\''+id+'\',false)">√</span>'; return '<div class="sqrt-group">'+prefix+'<input class="inp w80" id="'+id+'" placeholder="пр. √3" inputmode="none" autocomplete="off" autocorrect="off" spellcheck="false"></div>'; }
+function insertSqrt(id,neg){ var el=document.getElementById(id);if(!el||el.readOnly)return; var cur=el.value.replace(/^[-−\u2212]?[√\u221a]?/,''); el.value=(neg?'-√':'√')+cur;el.focus(); setTimeout(function(){el.selectionStart=el.selectionEnd=el.value.length;},0); }
+
+function buildInputs(q){
+  var sg=document.getElementById('steps-grid'),h='';
+  if(q.type==='standard'){
+    h+=srow(1,'Коефициенти:',ninp('in-a','a','w60')+ninp('in-b','b','w60')+ninp('in-c','c','w60')); h+=srow(2,'D = b²−4ac:',opL('D =')+ninp('in-d','D','w80')); h+=srow(3,'Корени:',ninp('in-x1','x₁','w100')+ninp('in-x2','x₂','w100'));
+  } else if(q.type==='vieta'){
+    h+='<div class="given-box">Уравнение: <b>'+eqStr(q.a,q.b,q.c)+'</b></div>'; h+=srow(1,'x₁ + x₂ =',ninp('in-sum','сбор','w100')); h+=srow(2,'x₁ · x₂ =',ninp('in-prod','произведение','w100')); h+='<div class="row-sep"></div>'; h+='<div class="format-note">💬 Приема се: цели числа, дроби (3/2), десетични (1.5)</div>'; h+=srow(3,'Корен x₁:',ninp('in-x1','x₁','w100')); h+=srow(4,'Корен x₂:',ninp('in-x2','x₂','w100'));
+  } else if(q.type==='compose'){
+    h+=srow(1,'Коефициенти (a=1):',ninp('in-a','a','w60')+ninp('in-b','b','w60')+ninp('in-c','c','w60'));
+  } else if(q.type==='factor'){
+    h+=srow(1,'Корени:',ninp('in-x1','x₁','w100')+ninp('in-x2','x₂','w100')); h+=srow(2,'a(x−x₁)(x−x₂):',opL('a=')+ninp('in-fa','a','w60')+opL('(x−')+ninp('in-fb','x₁','w60')+opL(')(x−')+ninp('in-fc','x₂','w60')+opL(')'));
+  } else if(q.type==='biquad'){
+    var nRoots=q.roots.length; var caseDesc=nRoots===4?'Четири реални корена (±√t₁, ±√t₂)':nRoots===2?'Два реални корена (±√t₁); t₂ < 0':'Няма реални корени; и двете t < 0';
+    h+='<div class="given-box">Смяна <b>t = x²</b> → квадратно по t.<br><span style="font-size:12px;opacity:.85;">'+caseDesc+'</span><br><span style="font-size:11px;opacity:.75;">Опрости √ ако е възможно (напр. √8 = 2√2)</span></div>';
+    h+=srow(1,'Корени по t:',ninp('in-t1','t₁','w80')+ninp('in-t2','t₂','w80')); h+='<div class="row-sep"></div>';
+    if(nRoots===0){ h+='<div style="font-size:14px;font-weight:800;color:var(--red);padding-left:31px;padding-top:4px;">Няма реални корени по x.</div>'; h+='<div style="font-size:12px;color:var(--muted);padding-left:31px;margin-top:4px;">Потвърди: напиши <b>0</b> в полето долу.</div>'; h+=srow(2,'Брой реални корени:',ninp('in-nroots','брой','w80')); } 
+    else { h+='<div class="format-note">💬 Запис: √5, 2√3, -√2 или числото (напр. 3)</div>'; h+='<div class="bq-roots-row">'; if(nRoots>=2){ h+='<div class="bq-root-cell"><div class="bq-root-label">x = √t₁</div>'+sqrtInp('in-bq1',false)+'</div>'; h+='<div class="bq-root-cell"><div class="bq-root-label">x = −√t₁</div>'+sqrtInp('in-bq2',true)+'</div>'; } if(nRoots===4){ h+='<div class="bq-root-cell"><div class="bq-root-label">x = √t₂</div>'+sqrtInp('in-bq3',false)+'</div>'; h+='<div class="bq-root-cell"><div class="bq-root-label">x = −√t₂</div>'+sqrtInp('in-bq4',true)+'</div>'; } h+='</div>'; }
+  } else if(q.type==='symm'){
+    h+='<div class="given-box">D = <b>'+q.D+'</b> — не е точен квадрат → ирационални корени<br>Намери <b>'+q.exprStr+'</b> с формулите на Виет.</div>';
+    h+=srow(1,'x₁ + x₂ =',ninp('in-sum','сбор','w100')); h+=srow(2,'x₁ · x₂ =',ninp('in-prod','произведение','w100')); h+='<div class="row-sep"></div>'; h+=srow(3,q.exprStr+' =',ninp('in-expr','стойност','w120'));
+  }
+  sg.innerHTML=h; var inputs=Array.from(sg.querySelectorAll('input'));
+  inputs.forEach(function(el,i){ el.addEventListener('keydown',function(e){if(e.key==='Enter'&&i===inputs.length-1){e.preventDefault();checkAnswer();}}); }); npAttach();
+}
+
+/* ════ TIMER ════ */
+function startTimer(){
+  clearInterval(G.timerInt);G.timeLeft=getTimeForQ(G.currentQ);updateTimerUI();
+  G.timerInt=setInterval(function(){G.timeLeft--;updateTimerUI();if(G.timeLeft<=0){clearInterval(G.timerInt);onTimeUp();}},1000);
+}
+function updateTimerUI(){
+  var maxT=getTimeForQ(G.currentQ),pct=G.timeLeft/maxT,warn=pct<.28;
+  if(DOM.timerBar){DOM.timerBar.style.width=(pct*100)+'%'; DOM.timerBar.classList.toggle('warn',warn);}
+  if(DOM.timerChip)DOM.timerChip.classList.toggle('warn',warn); if(DOM.hudTimer)DOM.hudTimer.textContent=G.timeLeft+'s';
+}
+function onTimeUp(){
+  if(G.checked)return;G.checked=true;G.err++; setFbMsg('⏱ Времето изтече! −1 стъпало.',false); stepBack();
+  document.getElementById('steps-grid').querySelectorAll('input').forEach(function(el){el.readOnly=true;});
+  document.getElementById('btn-check').style.opacity='0';document.getElementById('btn-check').style.pointerEvents='none';
+  var bn=document.getElementById('btn-next');bn.disabled=false;bn.textContent='Напред →'; if(G.hints)showHint(G.currentQ);
+}
+function setFbMsg(txt,ok){var el=document.getElementById('fb-msg');el.textContent=txt;el.className='fb-msg '+(ok==='retry'?'retry':ok?'ok':'err');}
+
+/* ════ NORMALISE ════ */
+function norm(s){return s.trim().replace(/\s+/g,'').replace(/[−–\u2212\u2014\u2013]/g,'-').replace(/,/g,'.');}
+function toDecimal(s){ s=norm(s).replace(/[^\d.\-\/]/g,'');if(s==='')return NaN; var sl=s.split('/'); if(sl.length===2){var n=parseFloat(sl[0]),d=parseFloat(sl[1]);if(!isNaN(n)&&!isNaN(d)&&d!==0)return n/d;return NaN;} return parseFloat(s); }
+function targetToDecimal(t){var sl=t.split('/');if(sl.length===2){var n=parseFloat(sl[0]),d=parseFloat(sl[1]);if(d!==0)return n/d;}return parseFloat(t);}
+function numEq(a,b){if(isNaN(a)||isNaN(b))return false;if(a===0&&b===0)return true;return Math.abs(a-b)<=1e-6*Math.max(Math.abs(a),Math.abs(b),1);}
+function rootMatchStr(val,target){return numEq(toDecimal(val),targetToDecimal(target));}
+function fracEq(n1,d1,n2,d2){return numEq(n1/d1,n2/d2);}
+function checkCoeffs(va,vb,vc,q){
+  var sa=parseFloat(norm(va).replace(/[^\d.\-]/g,'')),sb=parseFloat(norm(vb).replace(/[^\d.\-]/g,'')),sc=parseFloat(norm(vc).replace(/[^\d.\-]/g,''));
+  if(isNaN(sa)||isNaN(sb)||isNaN(sc)||sa===0)return false;
+  var bOk=q.b===0?numEq(sb,0):numEq(sb/sa,q.b/q.a); var cOk=q.c===0?numEq(sc,0):numEq(sc/sa,q.c/q.a); return bOk&&cOk&&(sa*q.a>0);
+}
+function checkD(vd,q,va,vb,vc){
+  var sd=parseFloat(norm(vd).replace(/[^\d.\-]/g,''));if(isNaN(sd)||sd<0)return false;
+  if(numEq(sd,q.D))return true;if(numEq(sd,q.D/4))return true;
+  if(va!==undefined&&vb!==undefined&&vc!==undefined){
+    var sa=parseFloat(norm(va).replace(/[^\d.\-]/g,'')),sb=parseFloat(norm(vb).replace(/[^\d.\-]/g,'')),sc=parseFloat(norm(vc).replace(/[^\d.\-]/g,''));
+    if(!isNaN(sa)&&!isNaN(sb)&&!isNaN(sc)&&sa!==0){var studentD=sb*sb-4*sa*sc;if(numEq(sd,studentD))return true;if(numEq(sd,studentD/4))return true;}
+  } return false;
+}
+function intMatch(val,expected){return numEq(toDecimal(val),expected);}
+function parseSqrtInput(raw){
+  if(!raw)return null; var s=raw.trim().replace(/\s+/g,'').replace(/[−–\u2212\u2013\u2014]/g,'-').replace(/\u221a/g,'√');
+  var sign=1;if(s.charAt(0)==='-'){sign=-1;s=s.slice(1);}else if(s.charAt(0)==='+'){sign=1;s=s.slice(1);}
+  var numVal=NaN,m;
+  if((m=s.match(/^(\d+)√(\d+)$/))){numVal=parseInt(m[1])*Math.sqrt(parseInt(m[2]));} else if((m=s.match(/^√(\d+)$/))){numVal=Math.sqrt(parseInt(m[1]));} else{numVal=parseFloat(s);}
+  if(isNaN(numVal)||numVal<0)return null; return{sign:sign,numericVal:numVal};
+}
+function getV(id){var el=document.getElementById(id);return el?el.value:'';}
+function markI(id,ok){var el=document.getElementById(id);if(el){el.classList.remove('ok','err');el.classList.add(ok?'ok':'err');}}
+
+function showHint(q){
+  var h=[];
+  if(q.type==='standard')h.push('D='+q.D+' | x₁='+q.x1str+', x₂='+q.x2str);
+  else if(q.type==='vieta')h.push('x₁+x₂='+q.sumVal+', x₁·x₂='+q.prodVal+' → x₁='+q.x1str+', x₂='+q.x2str);
+  else if(q.type==='compose')h.push(eqStr(q.a,q.b,q.c));
+  else if(q.type==='factor')h.push('x₁='+q.x1str+', x₂='+q.x2str+' | '+q.a+'(x−'+q.x1str+')(x−'+q.x2str+')');
+  else if(q.type==='biquad'){ if(q.roots.length===0)h.push('t₁='+q.t1+', t₂='+q.t2+' | няма реални корени'); else if(q.roots.length===2)h.push('t₁='+q.t1+', t₂='+q.t2+' | x='+rootStr(q.t1,false)+', '+rootStr(q.t1,true)); else h.push('t₁='+q.t1+', t₂='+q.t2+' | x='+rootStr(q.t1,false)+', '+rootStr(q.t1,true)+', '+rootStr(q.t2,false)+', '+rootStr(q.t2,true)); }
+  else if(q.type==='symm')h.push('x₁+x₂='+q.S+', x₁·x₂='+q.P+' | '+q.exprStr+' = '+q.exprVal);
+  if(h.length){var hb=document.getElementById('hint-box');hb.textContent='💡 Подсказка: '+h.join(' | ');hb.style.display='block';}
+}
+
+function checkAnswer(){
+  if(G.checked)return;clearInterval(G.timerInt);
+  var q=G.currentQ,allOk=false;
+  if(q.type==='standard'){
+    var cC=checkCoeffs(getV('in-a'),getV('in-b'),getV('in-c'),q), cD=checkD(getV('in-d'),q,getV('in-a'),getV('in-b'),getV('in-c'));
+    var x1v=getV('in-x1'),x2v=getV('in-x2'); var cX1=rootMatchStr(x1v,q.x1str)||rootMatchStr(x1v,q.x2str); var cX2=q.D===0?rootMatchStr(x2v,q.x1str):(rootMatchStr(x2v,q.x2str)||rootMatchStr(x2v,q.x1str));
+    markI('in-a',cC);markI('in-b',cC);markI('in-c',cC);markI('in-d',cD);markI('in-x1',cX1);markI('in-x2',cX2); allOk=cC&&cD&&cX1&&cX2;
+  } else if(q.type==='vieta'){
+    var cSum=intMatch(getV('in-sum'),q.sumVal),cProd=intMatch(getV('in-prod'),q.prodVal); var x1v=getV('in-x1'),x2v=getV('in-x2'); var cX1=rootMatchStr(x1v,q.x1str)||rootMatchStr(x1v,q.x2str); var cX2=rootMatchStr(x2v,q.x2str)||rootMatchStr(x2v,q.x1str);
+    markI('in-sum',cSum);markI('in-prod',cProd);markI('in-x1',cX1);markI('in-x2',cX2); allOk=cSum&&cProd&&cX1&&cX2;
+  } else if(q.type==='compose'){
+    var cC=checkCoeffs(getV('in-a'),getV('in-b'),getV('in-c'),q); markI('in-a',cC);markI('in-b',cC);markI('in-c',cC);allOk=cC;
+  } else if(q.type==='factor'){
+    var x1v=getV('in-x1'),x2v=getV('in-x2'); var cX1=rootMatchStr(x1v,q.x1str)||rootMatchStr(x1v,q.x2str); var cX2=rootMatchStr(x2v,q.x2str)||rootMatchStr(x2v,q.x1str);
+    var cFa=parseInt(norm(getV('in-fa')),10)===q.a; var cFb=rootMatchStr(getV('in-fb'),q.x1str)||rootMatchStr(getV('in-fb'),q.x2str); var cFc=rootMatchStr(getV('in-fc'),q.x2str)||rootMatchStr(getV('in-fc'),q.x1str);
+    markI('in-x1',cX1);markI('in-x2',cX2);markI('in-fa',cFa);markI('in-fb',cFb);markI('in-fc',cFc); allOk=cX1&&cX2&&cFa&&cFb&&cFc;
+  } else if(q.type==='biquad'){
+    var vt1=toDecimal(getV('in-t1')),vt2=toDecimal(getV('in-t2')); var cT1=(numEq(vt1,q.t1)||numEq(vt1,q.t2)); var cT2=(numEq(vt2,q.t2)||numEq(vt2,q.t1)); markI('in-t1',cT1);markI('in-t2',cT2);
+    var nRoots=q.roots.length;
+    if(nRoots===0){ var nr=parseInt(norm(getV('in-nroots')));var cNR=(nr===0);markI('in-nroots',cNR);allOk=cT1&&cT2&&cNR; } 
+    else { var expectedVals=q.roots.map(function(r){return r.sign*r.val;}); var inputIds=nRoots===4?['in-bq1','in-bq2','in-bq3','in-bq4']:['in-bq1','in-bq2'];
+      var parsed=inputIds.map(function(id){return parseSqrtInput(getV(id));}); var remExp=expectedVals.slice();
+      var bqOk=parsed.map(function(p){ if(!p)return false; var sv=p.sign*p.numericVal; var idx=remExp.findIndex(function(ev){return numEq(sv,ev);}); if(idx>=0){remExp.splice(idx,1);return true;}return false; });
+      inputIds.forEach(function(id,i){markI(id,bqOk[i]);}); allOk=cT1&&cT2&&bqOk.every(Boolean);
+    }
+  } else if(q.type==='symm'){
+    var cSum=intMatch(getV('in-sum'),q.S),cProd=intMatch(getV('in-prod'),q.P); var rawExpr=getV('in-expr');var cExpr=intMatch(rawExpr,q.exprVal);
+    markI('in-sum',cSum);markI('in-prod',cProd);markI('in-expr',cExpr); allOk=cSum&&cProd&&cExpr;
+  }
+  G.checked=true; document.getElementById('steps-grid').querySelectorAll('input').forEach(function(el){el.readOnly=true;});
+  document.getElementById('btn-check').style.opacity='0';document.getElementById('btn-check').style.pointerEvents='none';
+  if(allOk){
+    if(G.retried){ setFbMsg('✅ Поправено успешно — продължаваш напред!','retry'); var bn=document.getElementById('btn-next');bn.disabled=false;bn.textContent='Напред →'; spawnSparks(); } 
+    else { G.ok++;var steps=getStepsForQ(q); setFbMsg(steps>1?'🎉 Браво! +'+steps+' стъпала нагоре!':'🎉 Браво! Стъпало нагоре!',true); stepForward(steps);spawnSparks(); var bn=document.getElementById('btn-next');bn.disabled=false;bn.textContent='Напред →'; }
+  } else {
+    G.err++;G.typeErrors[q.type]=(G.typeErrors[q.type]||0)+1; var errWhere=getErrWhere(q);
+    if(G.retried){ setFbMsg('❌ Грешка'+(errWhere?' ('+errWhere+')':'')+'. Виж подсказката и продължи.',false); if(G.hints){G.hintLevel=2;requestHint();} var bn=document.getElementById('btn-next'),s=5;bn.disabled=true;bn.textContent='Изчакай '+s+'s 🔒'; var cd=setInterval(function(){s--;if(s>0)bn.textContent='Изчакай '+s+'s 🔒';else{clearInterval(cd);bn.disabled=false;bn.textContent='Напред →';}},1000); } 
+    else { setFbMsg('❌ Грешка'+(errWhere?' ('+errWhere+')':'')+' — −1 стъпало.',false); stepBack(); document.getElementById('btn-retry').style.display='inline-flex'; if(G.hints){var hBtn=document.getElementById('btn-hint-req');hBtn.style.display='inline-flex';hBtn.textContent='💡 Подсказка 1/3';G.hintLevel=0;} var bn=document.getElementById('btn-next'),s=8;bn.disabled=true;bn.textContent='Изчакай '+s+'s 🔒'; var cd=setInterval(function(){s--;if(s>0)bn.textContent='Изчакай '+s+'s 🔒';else{clearInterval(cd);bn.disabled=false;bn.textContent='Напред →';}},1000); }
+  }
+}
+
+function getErrWhere(q){
+  if(q.type==='standard'){var cC=checkCoeffs(getV('in-a'),getV('in-b'),getV('in-c'),q);var cD=checkD(getV('in-d'),q,getV('in-a'),getV('in-b'),getV('in-c'));if(!cC)return'коефициенти';if(!cD)return'дискриминанта';return'корени';}
+  if(q.type==='vieta'){var cS=intMatch(getV('in-sum'),q.sumVal),cP=intMatch(getV('in-prod'),q.prodVal);if(!cS||!cP)return'сбор/произведение';return'корени';}
+  if(q.type==='biquad'){var vt1=toDecimal(getV('in-t1')),vt2=toDecimal(getV('in-t2'));if(!numEq(vt1,q.t1)&&!numEq(vt1,q.t2))return'стойности на t';return'корени по x';}
+  if(q.type==='symm'){if(!intMatch(getV('in-sum'),q.S)||!intMatch(getV('in-prod'),q.P))return'сбор/произведение';return'стойността на израза';}
+  return'';
+}
+
+/* ════ LEVEL COMPLETE ════ */
+function showLevelComplete(){
+  var lv=LEVELS[G.level],isLast=G.level>=LEVELS.length-1,q=QUOTES[G.level%QUOTES.length];
+  document.getElementById('lvl-icon').textContent=lv.icon; document.getElementById('lvl-title').textContent=isLast?'ВСИЧКИ НИВА ПОКОРЕНИ! 🏆':'НИВО '+(G.level+1)+' — ПОКОРЕНО!';
+  document.getElementById('lvl-quote-text').textContent='"'+q.text+'"'; document.getElementById('lvl-quote-src').textContent=q.src;
+  var next=LEVELS[G.level+1], newTypes={2:'🆕 Съставяне + Разлагане',3:'🆕 Биквадратни уравнения',4:'🆕 Симетрични изрази'}; var nextNew=newTypes[G.level+1]?(' · '+newTypes[G.level+1]):'';
+  document.getElementById('lvl-next-info').innerHTML=(!isLast&&next)?'Следващо: <b>'+next.icon+' '+next.name+'</b> — '+next.stepsToNext+' стъпала'+nextNew:'Финалното ниво!';
+  var errThisLevel=G.err-(G._prevErr||0);G._prevErr=G.err; var stars=errThisLevel===0?'⭐⭐⭐':errThisLevel<=2?'⭐⭐☆':'⭐☆☆'; document.getElementById('lvl-stars').textContent=stars;
+  var total=G.ok+G.err,pct=total>0?Math.round(G.ok/total*100):100;
+  document.getElementById('lvl-stats').innerHTML='<div class="lvl-stat-chip"><span>✅</span>Верни: '+G.ok+'/'+total+'</div>'+'<div class="lvl-stat-chip"><span>🎯</span>Точност: '+pct+'%</div>'+'<div class="lvl-stat-chip"><span>🪜</span>Стъпала: '+G.totalSteps+'</div>';
+  document.getElementById('lvl-overlay').classList.add('show'); startLvlConfetti();
+}
+
+var lvlConfRaf=null,lvlConf=[];
+function startLvlConfetti(){
+  var c=document.getElementById('lvl-confetti');if(!c)return;
+  cancelAnimationFrame(lvlConfRaf);c.width=c.offsetWidth||window.innerWidth;c.height=c.offsetHeight||window.innerHeight;
+  var W=c.width,H=c.height,ctx=c.getContext('2d');lvlConf=[]; var COLS=['#ffe44d','#2edf72','#60d0ff','#fb7185','#c084fc','#fb923c','#fff'];
+  for(var i=0;i<90;i++){lvlConf.push({x:Math.random()*W,y:-20-Math.random()*H*.5,vx:(Math.random()-.5)*3.5,vy:2+Math.random()*4,rot:Math.random()*360,rotV:(Math.random()-.5)*8,w:7+Math.random()*8,h:4+Math.random()*5,col:COLS[Math.floor(Math.random()*COLS.length)],opacity:.85+Math.random()*.15});}
+  var frame=0;
+  function tick(){ctx.clearRect(0,0,W,H);var done=true;for(var i=0;i<lvlConf.length;i++){var p=lvlConf[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.08;p.vx*=.995;p.rot+=p.rotV;if(p.y<H+20)done=false;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.globalAlpha=Math.max(0,p.opacity*(1-Math.max(0,p.y-H*.7)/(H*.3)));ctx.fillStyle=p.col;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();}frame++;if(!done&&frame<300){lvlConfRaf=requestAnimationFrame(tick);}else{ctx.clearRect(0,0,W,H);}} tick();
+}
+function nextLevel(){
+  cancelAnimationFrame(lvlConfRaf); var c=document.getElementById('lvl-confetti');if(c){var ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);}
+  document.getElementById('lvl-overlay').classList.remove('show');
+  if(G.level>=LEVELS.length-1){showSummit();return;} G.level++;startLevel();
+}
+
+/* ════ SUMMIT & LEADERBOARD ════ */
+var TNAMES_BG={standard:'Стандартно',vieta:'Формули на Виет',compose:'Съставяне',factor:'Разлагане',biquad:'Биквадратно',symm:'Симетрично'};
+function saveToLeaderboard(name, klass, steps, acc) {
+  try { var board = JSON.parse(localStorage.getItem('matStalba_board') || '[]'); board.push({ name: name, klass: klass, steps: steps, acc: acc, date: new Date().toLocaleDateString('bg-BG') }); board.sort(function(a, b) { if (b.steps !== a.steps) return b.steps - a.steps; return b.acc - a.acc; }); board = board.slice(0, 5); localStorage.setItem('matStalba_board', JSON.stringify(board)); return board; } catch(e) { return []; }
+}
+
+function showSummit(){
+  clearInterval(G.timerInt);cancelAnimationFrame(climberRaf);
+  var total=G.ok+G.err,pct=total>0?Math.round(G.ok/total*100):0; var dn={easy:'Лесна',med:'Средна',hard:'Трудна'}; var grade=pct===100?'Отличен (6) ★':pct>=80?'Много добър (5)':pct>=65?'Добър (4)':pct>=50?'Среден (3)':'Продължавай! ✊';
+  document.getElementById('sum-name').textContent=G.name;document.getElementById('sum-class').textContent=G.klass; document.getElementById('sum-steps').textContent=G.totalSteps;document.getElementById('sum-ok').textContent=G.ok+'/'+total; document.getElementById('sum-err').textContent=G.err;document.getElementById('sum-acc').textContent=pct+'%'; document.getElementById('sum-diff').textContent=dn[G.diff]||G.diff;document.getElementById('sum-grade').textContent=grade; document.getElementById('sum-hints').textContent=G.hintUsed||'0';document.getElementById('sum-retries').textContent=G.retries||'0';
+  var motiv=MOTIV_MSGS.find(function(m){return pct>=m.min;})||MOTIV_MSGS[MOTIV_MSGS.length-1]; document.getElementById('sum-motiv').textContent=motiv.icon+' '+motiv.msg; document.getElementById('new-box-list').textContent=NEW_TOPICS.map(function(p){return'• '+p;}).join('\n');
+  var errEntries=Object.keys(G.typeErrors).filter(function(t){return G.typeErrors[t]>0;});
+  if(errEntries.length){ document.getElementById('type-errors-box').style.display='block'; document.getElementById('type-errors-list').textContent=errEntries.map(function(t){return'• '+(TNAMES_BG[t]||t)+': '+G.typeErrors[t]+' грешки';}).join('\n'); }
+  var typeErrStr=errEntries.length?'\nГрешки по тип:\n'+errEntries.map(function(t){return'  '+(TNAMES_BG[t]||t)+': '+G.typeErrors[t];}).join('\n'):'';
+  document.getElementById('result-ta').value='Ученик: '+G.name+'\nКлас: '+G.klass+'\nДата: '+new Date().toLocaleDateString('bg-BG')+'\nТрудност: '+(dn[G.diff]||G.diff)+'\nСтъпала: '+G.totalSteps+'\nВерни: '+G.ok+'/'+total+'\nТочност: '+pct+'%\nПодсказки: '+G.hintUsed+typeErrStr+'\nОценка: '+grade;
+  
+  var top5 = saveToLeaderboard(G.name, G.klass, G.totalSteps, pct);
+  var lbContainer = document.getElementById('leaderboard-container');
+  if(lbContainer && top5.length > 0) {
+    var lbHtml = '<div style="background:var(--inp-bg); border:2px solid var(--gold-dim); border-radius:11px; padding:12px 18px; text-align:left;">';
+    lbHtml += '<div style="text-align:center; color:var(--gold); font-family:\'Bebas Neue\',sans-serif; font-size:22px; letter-spacing:2px; margin-bottom:8px;">🏆 ТОП 5 АЛПИНИСТИ</div>';
+    top5.forEach(function(p, i){ var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'🏅'; var klassTxt = p.klass !== '—' && p.klass !== '' ? ' (' + p.klass + ')' : ''; lbHtml += '<div style="padding:6px 0; border-bottom:1px solid var(--sep); font-size:13px; font-weight:800; color:var(--text); display:flex; justify-content:space-between;">'; lbHtml += '<span>' + medal + ' ' + p.name + klassTxt + '</span>'; lbHtml += '<span style="color:var(--green)">' + p.steps + ' 🪜 | ' + p.acc + '%</span>'; lbHtml += '</div>'; });
+    lbHtml += '</div>'; lbContainer.innerHTML = lbHtml;
+  }
+  document.getElementById('summit').classList.add('show');launchConfetti();
+}
+function copyResult(){
+  var ta=document.getElementById('result-ta');ta.select();ta.setSelectionRange(0,9999);
+  try{document.execCommand('copy');}catch(e){navigator.clipboard&&navigator.clipboard.writeText(ta.value);}
+  document.getElementById('copy-msg').textContent='✓ Копирано!';setTimeout(function(){document.getElementById('copy-msg').textContent='';},2500);
+}
+function printResult(){
+  var total=G.ok+G.err,pct=total>0?Math.round(G.ok/total*100):0; var dn={easy:'Лесна',med:'Средна',hard:'Трудна'}; var grade=pct===100?'Отличен (6) ★':pct>=80?'Много добър (5)':pct>=65?'Добър (4)':pct>=50?'Среден (3)':'Продължавай! ✊'; var gradeColor=pct>=80?'#16a34a':pct>=65?'#0369a1':pct>=50?'#d97706':'#dc2626';
+  var now=new Date();var dateStr=now.toLocaleDateString('bg-BG',{day:'2-digit',month:'2-digit',year:'numeric'});var timeStr=now.toLocaleTimeString('bg-BG',{hour:'2-digit',minute:'2-digit'});
+  var errEntries=Object.keys(G.typeErrors||{}).filter(function(t){return G.typeErrors[t]>0;});
+  var typeErrHtml=errEntries.length?'<tr><td colspan="2" style="padding:12px 4px 4px;font-weight:900;color:#c00;font-size:13px;letter-spacing:1px;text-transform:uppercase;">Грешки по тип:</td></tr>'+errEntries.map(function(t){return prow('  '+(TNAMES_BG[t]||t),G.typeErrors[t]+' грешки');}).join(''):'';
+  var pa=document.getElementById('print-area');
+  pa.innerHTML='<div style="max-width:500px;width:100%;margin:0 auto;font-family:Nunito,sans-serif;">'
+    +'<div style="text-align:center;margin-bottom:20px;padding-bottom:16px;border-bottom:3px solid #b87000;"><div style="font-size:36px;margin-bottom:4px;">🪜</div><div style="font-family:Bebas Neue,sans-serif;font-size:34px;letter-spacing:4px;color:#b87000;">МАТ🪜СТЪЛБА</div><div style="font-size:12px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-top:2px;">Квадратни уравнения — Резултат</div></div>'
+    +'<div style="text-align:center;margin-bottom:18px;"><div style="font-size:13px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Ученик</div><div style="font-family:Bebas Neue,sans-serif;font-size:28px;letter-spacing:3px;color:#1a1000;">'+G.name+'</div>'+(G.klass&&G.klass!=='—'?'<div style="font-size:15px;color:#666;margin-top:2px;">Клас: <b>'+G.klass+'</b></div>':'')+'</div>'
+    +'<table style="width:100%;border-collapse:collapse;font-size:15px;margin-bottom:16px;">'+prow('Дата',dateStr+' '+timeStr)+prow('Трудност',dn[G.diff]||G.diff)+prow('Стъпала изкачени',G.totalSteps)+prow('Верни отговори',G.ok+' / '+total)+prow('Грешки',G.err)+prow('Точност',pct+'%')+prow('Подсказки',G.hintUsed||0)+prow('Повторни опити',G.retries||0)+typeErrHtml+'</table>'
+    +'<div style="text-align:center;padding:18px;border:3px solid '+gradeColor+';border-radius:12px;margin-bottom:16px;"><div style="font-size:11px;letter-spacing:3px;color:#888;text-transform:uppercase;margin-bottom:6px;">Оценка</div><div style="font-family:Bebas Neue,sans-serif;font-size:42px;letter-spacing:4px;color:'+gradeColor+';">'+grade+'</div></div>'
+    +'<div style="text-align:center;font-size:11px;color:#bbb;letter-spacing:1px;">Отпечатано от МАТ🪜СТЪЛБА · '+dateStr+'</div></div>';
+  pa.style.display='flex';window.print();pa.style.display='none';
+}
+function prow(label,val){return '<tr style="border-bottom:1px solid #eee;"><td style="padding:9px 4px;font-weight:800;color:#555;width:50%;">'+label+'</td><td style="padding:9px 4px;font-weight:900;color:#111;">'+val+'</td></tr>';}
+
+/* ════ SPARKS ════ */
+function spawnSparks(){
+  var btn=document.getElementById('btn-check');if(!btn)return; var r=btn.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+  for(var i=0;i<14;i++){
+    var sp=document.createElement('div');sp.className='spark'; var a=Math.random()*Math.PI*2,dist=40+Math.random()*90; sp.style.cssText='left:'+cx+'px;top:'+cy+'px;font-size:15px;position:fixed;'; sp.style.setProperty('--dx',(Math.cos(a)*dist)+'px');sp.style.setProperty('--dy',(Math.sin(a)*dist)+'px'); sp.textContent=['✦','★','🪜','🎉','⭐'][Math.floor(Math.random()*5)]; sp.style.color=['#ffe44d','#2edf72','#fff','#60d0ff'][Math.floor(Math.random()*4)]; sp.style.animationDelay=(Math.random()*.22)+'s';sp.style.animationDuration='.9s'; document.body.appendChild(sp);setTimeout(function(s){s.remove();},1400,sp);
+  }
+}
+function launchConfetti(){
+  for(var i=0;i<50;i++){
+    setTimeout(function(){ var sp=document.createElement('div');sp.className='spark'; sp.style.cssText='left:'+(Math.random()*window.innerWidth)+'px;top:6px;font-size:'+(11+Math.random()*15)+'px;position:fixed;'; sp.style.setProperty('--dx',(Math.random()*200-100)+'px');sp.style.setProperty('--dy',(110+Math.random()*370)+'px'); sp.textContent=['🏆','🪜','🌟','✦','★','🎉'][Math.floor(Math.random()*6)]; sp.style.animationDuration=(0.9+Math.random()*1.2)+'s'; document.body.appendChild(sp);setTimeout(function(s){s.remove();},2400,sp); },i*60);
+  }
+}
+</script>
+</body>
+</html>
