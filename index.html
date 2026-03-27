@@ -570,37 +570,37 @@ body{background:var(--bg);}
 <div class="calc-panel" id="calc-panel">
   <div class="calc-display"><div class="calc-expr" id="calc-expr"></div><div class="calc-result" id="calc-result"></div></div>
   <div class="calc-grid">
-    <button class="calc-btn clr" onclick="calcClear()">C</button>
-    <button class="calc-btn op" onclick="calcParen('(')">(</button>
-    <button class="calc-btn op" onclick="calcParen(')')">)</button>
-    <button class="calc-btn op" onclick="calcDel()">⌫</button>
+    <button class="calc-btn clr" onmousedown="event.preventDefault()" onclick="calcClear()">C</button>
+    <button class="calc-btn op" onmousedown="event.preventDefault()" onclick="calcParen('(')">(</button>
+    <button class="calc-btn op" onmousedown="event.preventDefault()" onclick="calcParen(')')">)</button>
+    <button class="calc-btn op" onmousedown="event.preventDefault()" onclick="calcDel()">⌫</button>
 
-    <button class="calc-btn op" onclick="calcSq()">x²</button>
-    <button class="calc-btn grn" onclick="calcSqrtSym()">√</button>
-    <button class="calc-btn op" onclick="calcFrac()">⁄</button>
+    <button class="calc-btn op" onmousedown="event.preventDefault()" onclick="calcSq()">x²</button>
+    <button class="calc-btn grn" onmousedown="event.preventDefault()" onclick="calcSqrtSym()">√</button>
+    <button class="calc-btn op" onmousedown="event.preventDefault()" onclick="calcFrac()">⁄</button>
     <!-- FIX #10 — ± button -->
-    <button class="calc-btn pm" onclick="calcPM()">±</button>
+    <button class="calc-btn pm" onmousedown="event.preventDefault()" onclick="calcPM()">±</button>
 
-    <button class="calc-btn" onclick="calcNum('7')">7</button>
-    <button class="calc-btn" onclick="calcNum('8')">8</button>
-    <button class="calc-btn" onclick="calcNum('9')">9</button>
-    <button class="calc-btn op" onclick="calcOp('/')">÷</button>
+    <button class="calc-btn" onmousedown="event.preventDefault()" onclick="calcNum('7')">7</button>
+    <button class="calc-btn" onmousedown="event.preventDefault()" onclick="calcNum('8')">8</button>
+    <button class="calc-btn" onmousedown="event.preventDefault()" onclick="calcNum('9')">9</button>
+    <button class="calc-btn op" onmousedown="event.preventDefault()" onclick="calcOp('/')">÷</button>
 
-    <button class="calc-btn" onclick="calcNum('4')">4</button>
-    <button class="calc-btn" onclick="calcNum('5')">5</button>
-    <button class="calc-btn" onclick="calcNum('6')">6</button>
-    <button class="calc-btn op" onclick="calcOp('*')">×</button>
+    <button class="calc-btn" onmousedown="event.preventDefault()" onclick="calcNum('4')">4</button>
+    <button class="calc-btn" onmousedown="event.preventDefault()" onclick="calcNum('5')">5</button>
+    <button class="calc-btn" onmousedown="event.preventDefault()" onclick="calcNum('6')">6</button>
+    <button class="calc-btn op" onmousedown="event.preventDefault()" onclick="calcOp('*')">×</button>
 
-    <button class="calc-btn" onclick="calcNum('1')">1</button>
-    <button class="calc-btn" onclick="calcNum('2')">2</button>
-    <button class="calc-btn" onclick="calcNum('3')">3</button>
-    <button class="calc-btn op" onclick="calcMinus()">−</button>
+    <button class="calc-btn" onmousedown="event.preventDefault()" onclick="calcNum('1')">1</button>
+    <button class="calc-btn" onmousedown="event.preventDefault()" onclick="calcNum('2')">2</button>
+    <button class="calc-btn" onmousedown="event.preventDefault()" onclick="calcNum('3')">3</button>
+    <button class="calc-btn op" onmousedown="event.preventDefault()" onclick="calcMinus()">−</button>
 
-    <button class="calc-btn" onclick="calcNum('0')">0</button>
-    <button class="calc-btn op" onclick="calcDot()">.</button>
-    <button class="calc-btn eq" onclick="calcEquals()">=</button>
+    <button class="calc-btn" onmousedown="event.preventDefault()" onclick="calcNum('0')">0</button>
+    <button class="calc-btn op" onmousedown="event.preventDefault()" onclick="calcDot()">.</button>
+    <button class="calc-btn eq" onmousedown="event.preventDefault()" onclick="calcEquals()">=</button>
 
-    <button class="calc-btn ok-btn" onclick="calcClose()">✅ ОК →</button>
+    <button class="calc-btn ok-btn" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault();calcClose()" onclick="calcClose()">✅ ОК →</button>
   </div>
 </div>
 
@@ -713,7 +713,7 @@ var DOM = { timerBar:null, timerChip:null, hudTimer:null };
 /* ════════════════════════════════════════════════
    CALCULATOR — FIX #10 added ± button
 ════════════════════════════════════════════════ */
-var CALC = { target:null, tokens:[], display:'', newNum:true, lastExpr:'', justOp:false };
+var CALC = { target:null, lastTarget:null, tokens:[], display:'', newNum:true, lastExpr:'', justOp:false };
 
 /* FIX #2 — toggle calc from HUD button */
 function toggleCalc(){
@@ -746,6 +746,7 @@ function npAttach(){
 
 function npFocus(el){
   CALC.target=el;
+  CALC.lastTarget=el;  /* резервен — не се трие при blur */
   var cp=document.getElementById('calc-panel');
   if(cp) cp.classList.add('open');
   var sg=document.getElementById('screen-game');
@@ -952,18 +953,42 @@ function cRefresh(){
 }
 
 function calcClose(){
-  if(CALC.tokens.length>0){calcEquals();}
-  var cp=document.getElementById('calc-panel');if(cp) cp.classList.remove('open');
-  var sg=document.getElementById('screen-game');if(sg) sg.classList.remove('numpad-open');
-  document.querySelectorAll('input.inp').forEach(function(i){i.classList.remove('np-active');});
-  if(CALC.target){
-    var sgGrid=document.getElementById('steps-grid');
+  /* Използваме CALC.target ИЛИ резервния CALC.lastTarget
+     (lastTarget се запазва при всяко npFocus и не се трие при blur) */
+  var dest = CALC.target || CALC.lastTarget;
+
+  /* 1. Финализирай изчислението ако има pending операция */
+  if(CALC.tokens.length > 0){ calcEquals(); }
+
+  /* 2. Запиши резултата в полето */
+  if(dest && CALC.display !== ''){
+    dest.value = CALC.display;
+    try {
+      dest.dispatchEvent(new Event('input',  {bubbles:true}));
+      dest.dispatchEvent(new Event('change', {bubbles:true}));
+    } catch(e){}
+  }
+
+  /* 3. Затвори панела и изчисти стил */
+  var cp = document.getElementById('calc-panel');
+  if(cp) cp.classList.remove('open');
+  var sg = document.getElementById('screen-game');
+  if(sg) sg.classList.remove('numpad-open');
+  document.querySelectorAll('input.inp').forEach(function(i){ i.classList.remove('np-active'); });
+
+  /* 4. Нулирай state */
+  CALC.target = null;
+
+  /* 5. Премести фокуса на следващото поле */
+  if(dest){
+    var sgGrid = document.getElementById('steps-grid');
     if(sgGrid){
-      var inputs=Array.from(sgGrid.querySelectorAll('input.inp'));
-      var idx=inputs.indexOf(CALC.target);
-      if(idx>=0&&idx<inputs.length-1){inputs[idx+1].focus();}
+      var inputs = Array.from(sgGrid.querySelectorAll('input.inp'));
+      var idx = inputs.indexOf(dest);
+      if(idx >= 0 && idx < inputs.length - 1){
+        setTimeout(function(){ inputs[idx+1].focus(); }, 50);
+      }
     }
-    CALC.target=null;
   }
 }
 
@@ -1400,6 +1425,7 @@ function nextQuestion(){
   var bn=document.getElementById('btn-next');bn.disabled=true;bn.textContent='Напред →';
   document.getElementById('btn-retry').style.display='none';
   document.getElementById('btn-hint-req').style.display='none';
+  CALC.lastTarget=null;  /* изчисти резервния target при нова задача */
   calcClose();
   renderQ(G.currentQ);startTimer();
 }
