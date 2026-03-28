@@ -1257,7 +1257,7 @@ var LEVELS=[
   {name:'Трети етаж',    icon:'⛅', stepsToNext:4, timePerQ:65},   /* standard + biquad */
   {name:'Покривът',      icon:'🏆', stepsToNext:4, timePerQ:55}    /* factor + symm */
 ];
-var TYPE_TIME_BONUS={standard:0,vieta:0,compose:0,factor:0,biquad:30,symm:60};
+var TYPE_TIME_BONUS={standard:0,vieta:0,compose:0,factor:45,biquad:30,symm:60};
 function getTimeForQ(q){return LEVELS[G.level].timePerQ+(TYPE_TIME_BONUS[q&&q.type]||0);}
 var TYPE_STEP_BONUS={standard:1,vieta:1,compose:1,factor:1,biquad:2,symm:2};
 function getStepsForQ(q){var base=TYPE_STEP_BONUS[q&&q.type]||1;if(base>1&&G.level>=3)base++;return base;}
