@@ -190,7 +190,7 @@ body{background:var(--bg);}
 .calc-btn.clr{color:var(--red); background:rgba(255,23,68,0.08);}
 /* FIX #10 — ± button */
 .calc-btn.pm{color:var(--purple); background:rgba(206,147,216,0.08);}
-.calc-btn.eq{grid-column:span 2; color:#1a0800; font-size:22px;}
+.calc-btn.eq{grid-column:span 1; color:#1a0800; font-size:22px;}
 [data-theme="dark"] .calc-btn.eq{background:linear-gradient(135deg,#ffd700,#ffb800); box-shadow:0 4px 0 #b38000;}
 [data-theme="light"] .calc-btn.eq{background:linear-gradient(135deg,#c07000,#a05800); color:#fff; box-shadow:0 4px 0 #703d00;}
 .calc-btn.ok-btn{grid-column:span 4; background:var(--green); color:#000; font-size:16px; letter-spacing:1px; box-shadow:0 4px 0 #00994d;}
@@ -598,6 +598,7 @@ body{background:var(--bg);}
 
     <button class="calc-btn" onmousedown="event.preventDefault()" onclick="calcNum('0')">0</button>
     <button class="calc-btn op" onmousedown="event.preventDefault()" onclick="calcDot()">.</button>
+    <button class="calc-btn op" onmousedown="event.preventDefault()" onclick="calcOp('+')">+</button>
     <button class="calc-btn eq" onmousedown="event.preventDefault()" onclick="calcEquals()">=</button>
 
     <button class="calc-btn ok-btn" onmousedown="event.preventDefault()" ontouchstart="event.preventDefault();calcClose()" onclick="calcClose()">✅ ОК →</button>
@@ -1264,7 +1265,7 @@ function getStepsForQ(q){var base=TYPE_STEP_BONUS[q&&q.type]||1;if(base>1&&G.lev
 
 var QUOTES=[{text:'Математиката е езикът, на който Бог е написал Вселената.',src:'— Галилео Галилей'},{text:'Не се страхувай от трудното. Трудното те прави по-силен.',src:'— Народна мъдрост'},{text:'Всяка задача, която решиш, е стъпало нагоре по стълбата на знанието.',src:'— Непознат учител'},{text:'Математиката е гимнастика на ума.',src:'— Александър Сухомлински'},{text:'Трудността е само нов начин да видиш решението.',src:'— Мъдрост на стълбата'}];
 var NEW_TOPICS=['🗻 Теорема за Питагор','📐 Тригонометрия','∫ Диференциално смятане','📊 Статистика и вероятности','🔢 Теория на числата'];
-var MOTIV_MSGS=[{min:100,msg:'Перфектно! Всяко стъпало — завоювано с точност.',icon:'🏆'},{min:80,msg:'Грешките са само стъпала към върха.',icon:'⭐'},{min:60,msg:'Всеки алпинист е паднал. Важното е да се изкачиш отново.',icon:'💪'},{min:0,msg:'Пробвай пак — всеки опит те прави по-силен.',icon:'🔥'}];
+var MOTIV_MSGS=[{min:100,msg:'Перфектно! Всяко стъпало — завоювано с точност.',icon:'🏆'},{min:80,msg:'Грешките са само стъпала към върха.',icon:'⭐'},{min:60,msg:'Дори да слезеш едно стъпало, важното е да продължиш нагоре.',icon:'💪'},{min:0,msg:'Пробвай пак — всеки опит те прави по-силен.',icon:'🔥'}];
 /* FIX #17 — new type messages */
 var LEVEL_NEW_TYPES={
   1:'🆕 На това ниво: Стандартно уравнение + Съставяне на уравнение',
